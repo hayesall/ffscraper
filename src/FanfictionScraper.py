@@ -17,6 +17,9 @@ from __future__ import print_function
 
 from bs4 import BeautifulSoup as bs
 
+# progress.py is used under the terms of the MIT license
+from progress import progress
+
 import argparse
 import re
 import requests
@@ -199,8 +202,19 @@ if __name__ == '__main__':
 
     elif args.file:
         # Import the sids from the file and scrape each of them.
+
         sids = ImportStoryIDs(args.file)
+
+        # Values for the progress bar.
+        number_of_sids = len(sids)
+        counter = 0
+
         for sid in sids:
+
+            # Helpful progress bar
+            progress(counter, number_of_sids, status='Currently on: {0}'.format(sid))
+            counter += 1
+
             story = FanfictionScraper(sid)
 
             predicates = []
@@ -208,5 +222,6 @@ if __name__ == '__main__':
             predicates.append(PredicateLogicBuilder('rating', story['sid'], story['rating']))
             predicates.append(PredicateLogicBuilder('genre', story['sid'], story['genre']))
 
-            for p in predicates:
-                print(p)
+            with open('facts.txt', 'a') as f:
+                for p in predicates:
+                    f.write(p + '\n')
