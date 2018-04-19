@@ -86,20 +86,17 @@ def FanfictionScraper(storyid, rate_limit=3):
     story = {
         'sid': storyid,
         'aid': authorid,
-        'category': category,
-        'fandom': fandom,
-        'title': title,
-        'published': when_published,
-        'updated': when_updated,
-        'metadata': metadata,
-        'abstract': abstract,
-        'story_text': story_text
+        #'category': category,
+        #'fandom': fandom,
+        #'title': title,
+        #'published': when_published,
+        #'updated': when_updated,
+        'rating': metadata[0],
+        'genre': metadata[2]
+        #'metadata': metadata,
+        #'abstract': abstract,
+        #'story_text': story_text
     }
-
-    for i in metadata:
-        print(i)
-
-    print(story)
 
     #print(soup.prettify())
     return story
@@ -110,6 +107,40 @@ def ReviewScraper(storyid, rate_limit=3):
     time.sleep(rate_limit)
 
     pass
+
+def PredicateLogicBuilder(type, id, value):
+    """
+    Converts inputs into (id, value) pairs, creating positive examples
+    and facts in predicate-logic format.
+
+    @method PredicateLogicBuilder
+    @param  {str}   type                type of the predicate
+    @param  {str}   id                  identifier attribute
+    @param  {str}   value               value of the identifier
+    @return {str}   ret                 string of the form 'A(B,C).'
+
+    Example:
+    >>> f = RelationalPredicateLogic('author', '123', '456')
+    >>> print(f)
+    author("123","456").
+    """
+
+    ret = ''
+
+    if value:
+        ret += type
+        ret += '("'
+        ret += id.replace(' ', '')
+        ret += '","'
+        ret += value.replace(' ', '')
+        ret += '").'
+    else:
+        ret += type
+        ret += '("'
+        ret += id.replace(' ', '')
+        ret += '").'
+
+    return ret
 
 def ImportStoryIDs(path_to_file):
     """
@@ -156,9 +187,26 @@ if __name__ == '__main__':
 
     if args.sid:
         # Scrape the contents of a single file from FanFiction.Net
-        FanfictionScraper(args.sid)
+        story = FanfictionScraper(args.sid)
+
+        predicates = []
+        predicates.append(PredicateLogicBuilder('author', story['aid'], story['sid']))
+        predicates.append(PredicateLogicBuilder('rating', story['sid'], story['rating']))
+        predicates.append(PredicateLogicBuilder('genre', story['sid'], story['genre']))
+
+        for p in predicates:
+            print(p)
+
     elif args.file:
         # Import the sids from the file and scrape each of them.
         sids = ImportStoryIDs(args.file)
         for sid in sids:
             story = FanfictionScraper(sid)
+
+            predicates = []
+            predicates.append(PredicateLogicBuilder('author', story['aid'], story['sid']))
+            predicates.append(PredicateLogicBuilder('rating', story['sid'], story['rating']))
+            predicates.append(PredicateLogicBuilder('genre', story['sid'], story['genre']))
+
+            for p in predicates:
+                print(p)
