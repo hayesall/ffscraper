@@ -40,6 +40,22 @@ __maintainer__ = __author__
 __email__ = 'alexander@batflyer.net'
 __status__ = 'Prototype'
 
+def HallucinateNegatives(pos_list):
+    """
+    Reads a list of positive examples and returns a list of negative examples
+    based on the provided content.
+
+    @method HallucinateNegatives
+    @param  {list}  pos_list                list of positive examples
+    @return {list}  neg_list                list of negative examples
+
+    Example:
+    >>> HallucinateNegatives(['a("1","2").', 'a("3","4").'])
+    ['a("1","4").', 'a("3","2").']
+    """
+
+    pass
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
