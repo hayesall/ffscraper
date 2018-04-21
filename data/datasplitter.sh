@@ -17,6 +17,10 @@
 # FanfictionScraper.py dumps the contents it scrapes into facts.txt.
 # This takes facts.txt and turns it into a dataset with train/test splits.
 
+
+# Usage:
+# $ bash datasplitter.sh
+
 # Put a copy of facts.txt to the side in case something goes wrong.
 cp facts.txt facts-orig.txt
 
@@ -54,3 +58,7 @@ cat xaj >> infer/infer_pos.txt
 # Remove backups and the posEx.txt that was split.
 rm -f xa*
 rm -f posEx.txt
+
+# Generate negative examples based on the contents of the positive examples.
+python create_negatives.py -f learn/learn_pos.txt -o learn/learn_neg.txt
+python create_negatives.py -f infer/infer_pos.txt -o infer/infer_neg.txt
