@@ -14,12 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-BASE="https://www.fanfiction.net/book/Hitchhiker-s-Guide-to-the-Galaxy/?&srt=1&r=10&p="
+echo "Downloading v1-0.jar and auc.jar"
 
-for i in {1..25}; do
-  URL=$BASE$i
-  echo "$URL"
-  PAGE="`wget --no-check-certificate -q -O - $URL`"
-  echo "$PAGE" | grep "class=stitle" | cut -c117-137 | cut -d'/' -f 3 >> data/Hitchhikers/sids.txt
-  sleep 3
-done
+curl -k -L https://github.com/boost-starai/BoostSRL-Misc/blob/master/VersionHistory/Version1.0/v1-0.jar?raw=true > v1-0.jar
+curl -k -L https://github.com/boost-starai/BoostSRL-Misc/blob/master/VersionHistory/Version1.0/auc.jar?raw=true > auc.jar

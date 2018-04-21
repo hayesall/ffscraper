@@ -1,0 +1,6 @@
+setParam: treeDepth=2.
+setParam: nodeSize=2.
+
+mode: author(+aid, +sid).
+mode: rating(+sid, #rating).
+mode: genre(+sid, #genre).
