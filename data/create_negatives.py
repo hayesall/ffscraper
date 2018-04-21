@@ -15,6 +15,8 @@
 
 from __future__ import print_function
 
+import argparse
+
 """
 BoostSRL needs negative examples to function correctly (since it is a discrim-
 inative learner). Since negative examples do not explicitly exist in this data,
@@ -39,4 +41,19 @@ __email__ = 'alexander@batflyer.net'
 __status__ = 'Prototype'
 
 if __name__ == '__main__':
-    pass
+
+    parser = argparse.ArgumentParser(
+        description='''Hallucinate negative examples from positive examples.''',
+        epilog='''Copyright (c) 2018 Alexander L. Hayes, Distributed under the
+                  terms of the Apache 2.0 License. A full copy of the license is
+                  available at the base of this repository.'''
+    )
+
+    parser.add_argument('-f', '--file', type=str, required=True,
+        help='Specify the file to hallucinate negative examples from.'
+    )
+
+    args = parser.parse_args()
+
+    with open(args.file) as f:
+        positive_examples = f.read().splitlines()
