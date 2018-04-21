@@ -114,16 +114,16 @@ def HallucinateNegatives(pos_list):
 
     # Iterate over all authors and stories. If an author did not write a story,
     # the predicate is false.
-    false_examples = []
+    neg_list = []
     for author in all_authors:
         for story in all_stories:
 
             if not true_examples.get(tuple([author, story])):
-                false_examples.append('author(' + author + ',' + story + ').')
+                neg_list.append('author(' + author + ',' + story + ').')
 
     # The length of the false_examples will be massive. On a set I was experi-
     # menting with, 423 positives resulted in 177,874 negatives.
-    print(len(false_examples))
+    return neg_list
 
 if __name__ == '__main__':
 
@@ -137,10 +137,21 @@ if __name__ == '__main__':
     parser.add_argument('-f', '--file', type=str, required=True,
         help='Specify the file to hallucinate negative examples from.'
     )
+    parser.add_argument('-o', '--output', type=str, default='o.txt',
+        help='Specify where the output file is written to.'
+    )
 
+    # Use the argument parser to get the file name and path.
     args = parser.parse_args()
 
-    with open(args.file) as f:
-        positive_examples = f.read().splitlines()
+    # Read/split the positive examples.
+    with open(args.file, 'r') as p:
+        positive_examples = p.read().splitlines()
 
-    HallucinateNegatives(positive_examples)
+    # Generate negative examples by observing positive examples.
+    negative_examples = HallucinateNegatives(positive_examples)
+
+    # Write the negative examples back to a file.
+    with open(args.output, 'w') as n:
+        for negative in negative_examples:
+            n.write(negative + '\n')
