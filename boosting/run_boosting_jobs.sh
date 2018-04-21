@@ -139,8 +139,8 @@ function setData() {
 }
 
 function Main() {
-  ROWS=( Hitchhikers Mockingbird ) #( Coraline Dragonriders Hitchhikers Mockingbird )
-  COLS=( Hitchhikers Mockingbird ) #( Coraline Dragonriders Hitchhikers Mockingbird )
+  ROWS=( Coraline Dragonriders Hitchhikers Mockingbird ) #( Coraline Dragonriders Hitchhikers Mockingbird )
+  COLS=( Coraline Dragonriders Hitchhikers Mockingbird ) #( Coraline Dragonriders Hitchhikers Mockingbird )
 
   for r in "${ROWS[@]}"; do
     for c in "${COLS[@]}"; do
