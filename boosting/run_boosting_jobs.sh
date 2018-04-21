@@ -35,7 +35,7 @@
 #   limitations under the License.
 
 averageover=10
-outputfile="performance.txt"
+outputfile="performance"
 
 while getopts "a:ho:" o; do
   case ${o} in
@@ -67,15 +67,15 @@ function runBoostingJob() {
   # Positional Arguments
   # $1 --> jobID
   # $2 --> trigger softmax boosting instead of normal RDN Learning
-  jobID=$1$outputfile
+  jobID=$outputfile$1
   softm=False
 
   echo "$jobID----------" >> $jobID
 
-  for _ in $(seq $averageover); do
+  for instance in $(seq $averageover); do
 
     # Run Learning and Inference
-    echo "    Started BoostSRL"
+    echo "  Started BoostSRL --- $instance"
     java -jar v1-0.jar -l -train learn/ -target author -trees 15 > learnout.log
     echo "    Learning complete."
     java -jar v1-0.jar -i -model learn/models/ -test infer/ -target author -trees 15 -aucJarPath . > inferout.log
@@ -85,13 +85,13 @@ function runBoostingJob() {
     tail -n 21 inferout.log >> $jobID
     echo "----------" >> $jobID
 
-    # Cleanup
-    rm -f inferout.log
-    rm -f learnout.log
-    rm -rf infer/
-    rm -rf learn/
-
   done
+
+  # Cleanup
+  rm -f inferout.log
+  rm -f learnout.log
+  rm -rf infer/
+  rm -rf learn/
 }
 
 function setData() {
@@ -133,14 +133,14 @@ function setData() {
       bash datasplitter.sh
 
       rm -rf learn/
-      mv infere ../boosting/
+      mv infer ../boosting/
     )
   fi
 }
 
 function Main() {
-  ROWS=( Coraline Dragonriders ) #Hitchhikers Mockingbird )
-  COLS=( Coraline Dragonriders ) #Hitchhikers Mockingbird )
+  ROWS=( Hitchhikers Mockingbird ) #( Coraline Dragonriders Hitchhikers Mockingbird )
+  COLS=( Hitchhikers Mockingbird ) #( Coraline Dragonriders Hitchhikers Mockingbird )
 
   for r in "${ROWS[@]}"; do
     for c in "${COLS[@]}"; do
