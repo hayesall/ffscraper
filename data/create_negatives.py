@@ -14,6 +14,7 @@
 #   limitations under the License.
 
 from __future__ import print_function
+from collections import Counter
 
 import argparse
 
@@ -54,7 +55,75 @@ def HallucinateNegatives(pos_list):
     ['a("1","4").', 'a("3","2").']
     """
 
-    pass
+    def parse(predicate_string):
+        """
+        Source:
+        https://github.com/batflyer/Mode-Inference/blob/master/inferModes.py
+
+        License:
+        BSD 2-Clause License
+
+        Copyright (c) 2018 Alexander L. Hayes
+        All rights reserved.
+
+        Redistribution and use in source and binary forms, with or without
+        modification, are permitted provided that the following conditions are met:
+        * Redistributions of source code must retain the above copyright notice, this
+          list of conditions and the following disclaimer.
+        * Redistributions in binary form must reproduce the above copyright notice,
+          this list of conditions and the following disclaimer in the documentation
+          and/or other materials provided with the distribution.
+        THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+        AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+        IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+        DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+        FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+        DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+        SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+        CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+        OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+        OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+        Input a string of the format:
+            'father(harrypotter,jamespotter).'
+        Returns a list where [0] is the name of the literal and [1] is the
+        list of variables in the rule.
+            ['father', ['harrypotter', 'jamespotter']]
+        """
+
+        predicate_list = predicate_string.replace(' ','').split(')', 1)[0].split('(')
+        predicate_list[1] = predicate_list[1].split(',')
+        return predicate_list
+
+    # Create some structures which we will use to infer what is false.
+    true_examples = {}
+    all_authors = []
+    all_stories = []
+
+    for example in pos_list:
+
+        pred_list = parse(example)
+
+        author = pred_list[1][0]
+        story = pred_list[1][1]
+
+        # Update the structures.
+        all_authors.append(author)
+        all_stories.append(story)
+        true_examples[tuple([author, story])] = True
+
+    # Iterate over all authors and stories. If an author did not write a story,
+    # the predicate is false.
+    false_examples = []
+    for author in all_authors:
+        for story in all_stories:
+
+            if not true_examples.get(tuple([author, story])):
+                false_examples.append('author(' + author + ',' + story + ').')
+
+    # The length of the false_examples will be massive. On a set I was experi-
+    # menting with, 423 positives resulted in 177,874 negatives.
+    print(len(false_examples))
 
 if __name__ == '__main__':
 
@@ -73,3 +142,5 @@ if __name__ == '__main__':
 
     with open(args.file) as f:
         positive_examples = f.read().splitlines()
+
+    HallucinateNegatives(positive_examples)
