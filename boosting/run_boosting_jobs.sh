@@ -16,6 +16,8 @@
 
 # Options:
 #   -h      Display this help information and exit.
+#   -a      Set the number of runs to average over (Default: 10)
+#   -o      Set the output file location (Default: performance.txt)
 
 # License:
 #   Copyright (c) 2018 Alexander L. Hayes (@batflyer)
@@ -32,12 +34,23 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-while getopts "h" o; do
+averageover=10
+outputfile="performance.txt"
+
+while getopts "a:ho:" o; do
   case ${o} in
+    a)
+      # Set the number of runs to average over (default: 10)
+      averageover=$OPTARG
+      ;;
     h)
       # Show help information and exit.
-      head -n 33 $0 | tail -n +3 | sed 's/#//'
+      head -n 35 $0 | tail -n +3 | sed 's/#//'
       exit 0
+      ;;
+    o)
+      # Set the output file to a custom location. Default performance.txt
+      outputfile=$OPTARG
       ;;
   esac
 done
@@ -49,20 +62,94 @@ done
 # ../data/Coraline/facts.txt
 
 function runBoostingJob() {
-  exit 0
+  # Run BoostSRL and record performance a given number of times.
+
+  # Positional Arguments
+  # $1 --> jobID
+  # $2 --> trigger softmax boosting instead of normal RDN Learning
+  jobID=$1$outputfile
+  softm=False
+
+  echo "$jobID----------" >> $jobID
+
+  for _ in $(seq $averageover); do
+
+    # Run Learning and Inference
+    echo "    Started BoostSRL"
+    java -jar v1-0.jar -l -train learn/ -target author -trees 15 > learnout.log
+    echo "    Learning complete."
+    java -jar v1-0.jar -i -model learn/models/ -test infer/ -target author -trees 15 -aucJarPath . > inferout.log
+    echo "    Inference complete."
+
+    # Record the results to the outputfile.
+    tail -n 21 inferout.log >> $jobID
+    echo "----------" >> $jobID
+
+    # Cleanup
+    rm -f inferout.log
+    rm -f learnout.log
+    rm -rf infer/
+    rm -rf learn/
+
+  done
 }
 
-(
-  cd ../data/
+function setData() {
 
-  cp Hitchhikers/facts.txt .
-  bash datasplitter.sh
+  # Positional Arguments
+  # $1 --> Row (Learn set)
+  # $2 --> Col (Infer set)
 
-  mv learn ../boosting/
-  mv infer ../boosting/
-)
+  # e.g.
+  # setData Coraline Coraline
+  # setData Hitchhikers Mockingbird
 
-if [[ ! -d learn ]]; then exit 1; fi
-if [[ ! -d infer ]]; then exit 1; fi
+  row=$1
+  col=$2
 
+  if [[ $row = $col ]]; then
+    (
+      # Learning and Inference are from the same set.
+      cd ../data/
+      cp $row/facts.txt .
+      bash datasplitter.sh
+
+      mv learn ../boosting/
+      mv infer ../boosting/
+    )
+  else
+    # Learning and inference are from different sets.
+    (
+      cd ../data/
+      cp $row/facts.txt .
+      bash datasplitter.sh
+
+      mv learn ../boosting/
+      rm -rf infer/
+    )
+    (
+      cd ../data/
+      cp $col/facts.txt .
+      bash datasplitter.sh
+
+      rm -rf learn/
+      mv infere ../boosting/
+    )
+  fi
+}
+
+function Main() {
+  ROWS=( Coraline Dragonriders ) #Hitchhikers Mockingbird )
+  COLS=( Coraline Dragonriders ) #Hitchhikers Mockingbird )
+
+  for r in "${ROWS[@]}"; do
+    for c in "${COLS[@]}"; do
+      echo "Currently on: $r-$c"
+      setData $r $c
+      runBoostingJob "$r-$c"
+    done
+  done
+}
+
+Main
 exit 0
