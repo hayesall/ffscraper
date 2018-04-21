@@ -66,7 +66,3 @@ rm -f posEx.txt
 # Generate negative examples based on the contents of the positive examples.
 python create_negatives.py -f learn/learn_pos.txt -o learn/learn_neg.txt
 python create_negatives.py -f infer/infer_pos.txt -o infer/infer_neg.txt
-
-# Move the data to the boosting directory.
-mv learn ../boosting/
-mv infer ../boosting/
