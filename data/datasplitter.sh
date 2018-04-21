@@ -33,6 +33,10 @@ mv temp facts.txt
 rm -rf learn; mkdir learn
 rm -rf infer; mkdir infer
 
+# Create pointers to the background knowledge in the learn/infer directories.
+echo 'import:"../background.txt"' > learn/learn_bk.txt
+echo 'import:"../background.txt"' > infer/infer_bk.txt
+
 # Move facts.txt into the learn and infer folders.
 cp facts.txt learn/learn_facts.txt
 mv facts.txt infer/infer_facts.txt
