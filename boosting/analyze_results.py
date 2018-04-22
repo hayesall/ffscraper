@@ -32,4 +32,21 @@ __email__ = 'alexander@batflyer.net'
 __status__ = 'Prototype'
 
 if  __name__ == '__main__':
-    pass
+
+    parser = argparse.ArgumentParser(
+        description='''Analyze the results output by run_boosting_jobs.sh''',
+        epilog='''Copyright (c) 2018 Alexander L. Hayes, Distributed under the
+                  terms of the Apache 2.0 License. A full copy of the license
+                  is available in the base of this repository.'''
+    )
+
+    parser.add_argument('-f', '--file', type=str, required=True,
+        help='Specify the file to analyze.'
+    )
+
+    args = parser.parse_args()
+
+    with open(args.file, 'r') as f:
+        input_file = f.read().splitlines()
+
+    print(input_file[0])
