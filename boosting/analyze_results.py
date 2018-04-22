@@ -16,7 +16,8 @@
 from __future__ import print_function
 
 import argparse
-import re
+
+import numpy as np
 
 """
 A short Python script for analyzing the results output from
@@ -31,6 +32,16 @@ __maintainer__ = __author__
 __email__ = 'alexander@batflyer.net'
 __status__ = 'Prototype'
 
+def getValueFromList(value, input_list):
+
+    ret = []
+
+    for line in input_list:
+        if value in line:
+            ret.append(float(line.split('=')[1]))
+
+    return ret
+
 if  __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
@@ -43,10 +54,24 @@ if  __name__ == '__main__':
     parser.add_argument('-f', '--file', type=str, required=True,
         help='Specify the file to analyze.'
     )
+    '''
+    parser.add_argument('-a', '--attribute', type=str,
+        help='Specify the property to return.'
+    )
+    '''
+
+    attributes = ['AUCROC', 'AUCPR', 'CLL', 'Precision', 'Recall', 'F1']
 
     args = parser.parse_args()
 
     with open(args.file, 'r') as f:
-        input_file = f.read().splitlines()
+        input_file_list = f.read().splitlines()
 
-    print(input_file[0])
+    aucroc = getValueFromList('AUC ROC', input_file_list)
+    auc_pr = getValueFromList('AUC PR', input_file_list)
+    #precision = getValueFromList('Precision', input_file_list)
+    recall = getValueFromList('Recall', input_file_list)
+
+    print(np.mean(aucroc))
+    print(np.mean(auc_pr))
+    print(np.mean(recall))
