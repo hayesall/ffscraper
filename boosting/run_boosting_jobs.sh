@@ -18,6 +18,7 @@
 #   -h      Display this help information and exit.
 #   -a      Set the number of runs to average over (Default: 10)
 #   -o      Set the output file location (Default: performance.txt)
+#   -s      Use softmax boosting (Default: False)
 
 # License:
 #   Copyright (c) 2018 Alexander L. Hayes (@batflyer)
@@ -36,8 +37,9 @@
 
 averageover=10
 outputfile="performance"
+softmaxboosting=
 
-while getopts "a:ho:" o; do
+while getopts "a:ho:s" o; do
   case ${o} in
     a)
       # Set the number of runs to average over (default: 10)
@@ -45,12 +47,16 @@ while getopts "a:ho:" o; do
       ;;
     h)
       # Show help information and exit.
-      head -n 35 $0 | tail -n +3 | sed 's/#//'
+      head -n 36 $0 | tail -n +3 | sed 's/#//'
       exit 0
       ;;
     o)
       # Set the output file to a custom location. Default performance.txt
       outputfile=$OPTARG
+      ;;
+    s)
+      # Use softmax boosting (Default: False)
+      softmaxboosting="SOFTM"
       ;;
   esac
 done
@@ -66,9 +72,7 @@ function runBoostingJob() {
 
   # Positional Arguments
   # $1 --> jobID
-  # $2 --> trigger softmax boosting instead of normal RDN Learning
-  jobID=$outputfile$1
-  softm=False
+  jobID=$outputfile$softmaxboosting$1
 
   echo "$jobID----------" >> $jobID
 
@@ -76,8 +80,16 @@ function runBoostingJob() {
 
     # Run Learning and Inference
     echo "  Started BoostSRL --- $instance"
-    java -jar v1-0.jar -l -train learn/ -target author -trees 15 > learnout.log
+
+    # Learning (either softmax or not)
+    if [[ $softmaxboosting ]]; then
+      java -jar v1-0.jar -l -softm -alpha 0.5 -beta -2 -train learn/ -target author -trees 15 > learnout.log
+    else
+      java -jar v1-0.jar -l -train learn/ -target author -trees 15 > learnout.log
+    fi
     echo "    Learning complete."
+
+    # Inference
     java -jar v1-0.jar -i -model learn/models/ -test infer/ -target author -trees 15 -aucJarPath . > inferout.log
     echo "    Inference complete."
 
