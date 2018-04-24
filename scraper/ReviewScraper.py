@@ -88,3 +88,8 @@ def ReviewScraper(storyid, reviews_num, rate_limit=3):
         #exit()
 
         print(p+1)
+
+if __name__ == '__main__':
+
+    raise(Exception('No main class in ReviewScraper.py'))
+    exit(1)
