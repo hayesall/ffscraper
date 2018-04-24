@@ -48,6 +48,19 @@ The authors employ a state-of-the-art statistical relational learning system: \t
 
 \section{Appendix}
 
+\subsection{Scraping FanFiction.Net}
+
+The terms of service for FanFiction.Net state the limitations of launching automated bots in Section 4, Paragraph E of their terms of service\footnote{https://www.fanfiction.net/tos/}, paraphrased here:
+
+\begin{itemize}
+    \item ``You agree not to use or launch any automated system... that accesses the Website in a manner that sends more request messages... than a human can reasonably produce in the same period....''
+    \item ``FanFiction.Net grants the operators of public search engines permission to use spiders... solely to the extent necessary for creating publicly available searchable indices... but not caches or archives....''
+    \item ``You agree not to collect or harvest any personally identifiable information... for any commercial solicitation purposes.''
+\end{itemize}
+
+Scraping FanFiction.Net may be accomplished via the \texttt{scraper/} directory of this repository. The core documentation pertaining to each script and their respective functions are contained therein, this discussion pertains to the high-level idea of what they accomplish.
+
+All users and stories on FanFiction.Net may be identified via a unique id-number. These id-numbers may be used to directly access one or the other, for example: user \textit{124}'s profile may be found by sending a request to https://www.fanfiction.net/u/124. In a similar manner, story \textit{124} would be at https://www.fanfiction.net/s/124. Reviews for a story follow the pattern \texttt{/r/125/0/1/}, where the first integer corresponds the story-id, the second integer to a certain chapter (or 0 for all reviews), and the third is a page number (a maximum of 15 reviews are displayed on each page, so any overflow will be on subsequent pages).
 
 \bibliographystyle{aaai}
 \bibliography{link-prediction-fanfiction}
