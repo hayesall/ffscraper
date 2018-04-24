@@ -136,15 +136,36 @@ def ReviewScraper(storyid, reviews_num, rate_limit=3):
     # pages the reviews  are stored on is equal to the following:
     number_of_pages = (reviews_num // 15) + 1
 
-    exit()
-
     for p in range(number_of_pages):
 
-        r = requests.get('https://www.fanfiction.net/r/' + storyid + '/0/' + str(p))
+        # Rate limit
+        time.sleep(rate_limit)
+
+        r = requests.get('https://www.fanfiction.net/r/' + storyid + '/0/' + str(p+1) + '/')
         html = r.text
         soup = bs(html, 'html.parser')
 
-        print(p)
+        # Get the tbody, which is where the review table is stored
+        t = soup.find('tbody')
+
+        # Loop over the table entries (td)
+        for review in t.find_all('td'):
+
+            # Reviews link to the profile of the user who reviewed it.
+            for link in review.find_all('a', href=True):
+
+                if '/u/' in str(link):
+                    print(str(link).split('"')[1].split('/')[2])
+                print()
+
+            print(review.text)
+            #exit()
+            time.sleep(0.5)
+
+
+        #exit()
+
+        print(p+1)
 
 def PredicateLogicBuilder(type, id, value):
     """
@@ -239,11 +260,8 @@ if __name__ == '__main__':
 
     elif args.review:
         # !!! In progress
-        print(args.review)
-        print(type(args.review))
 
         ReviewScraper(args.review, 16)
-        print('Reached?')
         exit()
 
     elif args.file:
