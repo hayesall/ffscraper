@@ -33,6 +33,18 @@ __maintainer__ = __author__
 __email__ = 'alexander@batflyer.net'
 __status__ = 'Prototype'
 
+def ReviewScraper(storyid, rate_limit=3):
+    """
+    Scrapes the reviews for a certain story.
+
+    @method ReviewScraper
+    @param  {str}               storyid         The id for a particular story.
+    @param  {int}               rate_limit      rate limit (in seconds)
+    @return {}
+    """
+
+    pass
+
 def FanfictionScraper(storyid, rate_limit=3):
     """
     Scrapes data from a story on FanFiction.Net
@@ -100,6 +112,8 @@ def FanfictionScraper(storyid, rate_limit=3):
         #'abstract': abstract,
         #'story_text': story_text
     }
+
+    #print(metadata)
 
     #print(soup.prettify())
     return story
