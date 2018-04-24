@@ -29,6 +29,48 @@ __maintainer__ = __author__
 __email__ = 'alexander@batflyer.net'
 __status__ = 'Prototype'
 
+def ReviewIDScraper(storyid, reviews_num, rate_limit=3):
+    """
+    Scrapes the reviews for a certain story, but only returns the user ids.
+
+    ### Deprecation Warning;
+    This is most likely a short-term hack for this specific function.
+    As ReviewScraper.py is finalized this will likely be absorbed into
+    the ReviewScraper function or reimagined as a function in a class.
+
+    @method ReviewIDScraper
+
+    @return {list}      list of user ids with duplicates removed.
+    """
+    number_of_pages = (reviews_num // 15) + 1
+
+    user_id_list = []
+
+    for p in range(number_of_pages):
+
+        # Rate limit
+        time.sleep(rate_limit)
+
+        r = requests.get('https://www.fanfiction.net/r/' + storyid + '/0/' + str(p+1) + '/')
+        html = r.text
+        soup = bs(html, 'html.parser')
+
+        # Get the tbody, which is where the review table is stored
+        t = soup.find('tbody')
+
+        # Loop over the table entries (td)
+        for review in t.find_all('td'):
+
+            # Reviews link to the profile of the user who reviewed it.
+            for link in review.find_all('a', href=True):
+
+                if '/u/' in str(link):
+                    # This is a way to get the user id.
+                    user_id_list.append(str(link).split('"')[1].split('/')[2])
+
+    return list(set(user_id_list))
+
+
 def ReviewScraper(storyid, reviews_num, rate_limit=3):
     """
     Scrapes the reviews for a certain story.
@@ -77,17 +119,18 @@ def ReviewScraper(storyid, reviews_num, rate_limit=3):
             for link in review.find_all('a', href=True):
 
                 if '/u/' in str(link):
+                    # This is a way to get the user id.
                     print(str(link).split('"')[1].split('/')[2])
-                print()
 
+            '''
             print(review.text)
             #exit()
             time.sleep(0.5)
-
+            '''
 
         #exit()
 
-        print(p+1)
+        #print(p+1)
 
 if __name__ == '__main__':
 
