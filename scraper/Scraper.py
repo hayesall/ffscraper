@@ -56,6 +56,11 @@ if __name__ == '__main__':
     mode.add_argument('-r', '--review', type=str,
         help='Scrape the reviews for a particular story.')
 
+    parser.add_argument('-v', '--verbose', action='store_true',
+        help='Increase verbosity to help with debugging.')
+    parser.add_argument('-o', '--output', type=str,
+        help='Set output file the information scraped.')
+
     args = parser.parse_args()
 
     if args.sid:
