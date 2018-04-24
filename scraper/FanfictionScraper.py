@@ -26,7 +26,7 @@ import re
 import requests
 import time
 
-from ReviewScraper import ReviewScraper
+from ReviewScraper import ReviewIDScraper
 
 __author__ = 'Alexander L. Hayes (@batflyer)'
 __copyright__ = 'Copyright (c) 2018 Alexander L. Hayes'
@@ -103,6 +103,13 @@ def FanfictionScraper(storyid, rate_limit=3):
         #'abstract': abstract,
         #'story_text': story_text
     }
+
+    for m in metadata:
+        if 'Reviews' in m:
+
+            num_of_reviews = int(m.split()[1])
+            users = ReviewIDScraper(storyid, num_of_reviews)
+            story['Reviewers'] = users
 
     #print(metadata)
 

@@ -78,6 +78,9 @@ if __name__ == '__main__':
     elif args.review:
         # !!! In progress
 
+        raise(Exception('Review has some bugs, it needs the story metadata.'))
+        exit(1)
+
         ReviewScraper(args.review, 16)
         exit()
 
@@ -102,6 +105,12 @@ if __name__ == '__main__':
             predicates.append(Utils.PredicateLogicBuilder('author', story['aid'], story['sid']))
             predicates.append(Utils.PredicateLogicBuilder('rating', story['sid'], story['rating']))
             predicates.append(Utils.PredicateLogicBuilder('genre', story['sid'], story['genre']))
+
+            if story.get('Reviewers'):
+                reviewers = story['Reviewers']
+
+                for reviewer in reviewers:
+                    predicates.append(Utils.PredicateLogicBuilder('reviewed', reviewer, story['sid']))
 
             with open('facts.txt', 'a') as f:
                 for p in predicates:
