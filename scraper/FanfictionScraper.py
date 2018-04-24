@@ -14,6 +14,7 @@
 #   limitations under the License.
 
 from __future__ import print_function
+from __future__ import division
 
 from bs4 import BeautifulSoup as bs
 
@@ -25,6 +26,8 @@ import re
 import requests
 import time
 
+from ReviewScraper import ReviewScraper
+
 __author__ = 'Alexander L. Hayes (@batflyer)'
 __copyright__ = 'Copyright (c) 2018 Alexander L. Hayes'
 __license__ = 'Apache'
@@ -32,18 +35,6 @@ __version__ = '0.0.1'
 __maintainer__ = __author__
 __email__ = 'alexander@batflyer.net'
 __status__ = 'Prototype'
-
-def ReviewScraper(storyid, rate_limit=3):
-    """
-    Scrapes the reviews for a certain story.
-
-    @method ReviewScraper
-    @param  {str}               storyid         The id for a particular story.
-    @param  {int}               rate_limit      rate limit (in seconds)
-    @return {}
-    """
-
-    pass
 
 def FanfictionScraper(storyid, rate_limit=3):
     """
@@ -118,124 +109,7 @@ def FanfictionScraper(storyid, rate_limit=3):
     #print(soup.prettify())
     return story
 
-def ReviewScraper(storyid, rate_limit=3):
-
-    # Rate limit
-    time.sleep(rate_limit)
-
-    pass
-
-def PredicateLogicBuilder(type, id, value):
-    """
-    Converts inputs into (id, value) pairs, creating positive examples
-    and facts in predicate-logic format.
-
-    @method PredicateLogicBuilder
-    @param  {str}   type                type of the predicate
-    @param  {str}   id                  identifier attribute
-    @param  {str}   value               value of the identifier
-    @return {str}   ret                 string of the form 'A(B,C).'
-
-    Example:
-    >>> f = RelationalPredicateLogic('author', '123', '456')
-    >>> print(f)
-    author("123","456").
-    """
-
-    ret = ''
-
-    if value:
-        ret += type
-        ret += '("'
-        ret += id.replace(' ', '')
-        ret += '","'
-        ret += value.replace(' ', '')
-        ret += '").'
-    else:
-        ret += type
-        ret += '("'
-        ret += id.replace(' ', '')
-        ret += '").'
-
-    return ret
-
-def ImportStoryIDs(path_to_file):
-    """
-    Reads FanFiction.Net story-ids from a file, where each story-id is on
-    a separate line. Returns a list of strings representing story-ids.
-
-    @method ImportStoryIDs
-    @param  {str}               path_to_file    path to sid file.
-    @return {list}              sids            list of strings (sids)
-
-    Example:
-    $ cat sids.txt
-    123
-    344
-    $ python
-    >>> import FanfictionScraper as fs
-    >>> sids = fs.ImportStoryIDs('sids.txt')
-    >>> sids
-    ['123', '344']
-    """
-
-    with open(path_to_file) as f:
-        sids = f.read().splitlines()
-
-    return sids
-
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser(
-        description='''Scraper for FanFiction.Net.''',
-        epilog='''Copyright (c) 2018 Alexander L. Hayes. Distributed under the
-                  terms of the Apache 2.0 License. A full copy of the license is
-                  available at the base of this repository.'''
-    )
-
-    mode = parser.add_mutually_exclusive_group()
-
-    mode.add_argument('-s', '--sid', type=str,
-        help='Scrape a single story.')
-    mode.add_argument('-f', '--file', type=str,
-        help='Scrape all sids contained in a file.')
-
-    args = parser.parse_args()
-
-    if args.sid:
-        # Scrape the contents of a single file from FanFiction.Net
-        story = FanfictionScraper(args.sid)
-
-        predicates = []
-        predicates.append(PredicateLogicBuilder('author', story['aid'], story['sid']))
-        predicates.append(PredicateLogicBuilder('rating', story['sid'], story['rating']))
-        predicates.append(PredicateLogicBuilder('genre', story['sid'], story['genre']))
-
-        for p in predicates:
-            print(p)
-
-    elif args.file:
-        # Import the sids from the file and scrape each of them.
-
-        sids = ImportStoryIDs(args.file)
-
-        # Values for the progress bar.
-        number_of_sids = len(sids)
-        counter = 0
-
-        for sid in sids:
-
-            # Helpful progress bar
-            progress(counter, number_of_sids, status='Currently on: {0}'.format(sid))
-            counter += 1
-
-            story = FanfictionScraper(sid)
-
-            predicates = []
-            predicates.append(PredicateLogicBuilder('author', story['aid'], story['sid']))
-            predicates.append(PredicateLogicBuilder('rating', story['sid'], story['rating']))
-            predicates.append(PredicateLogicBuilder('genre', story['sid'], story['genre']))
-
-            with open('facts.txt', 'a') as f:
-                for p in predicates:
-                    f.write(p + '\n')
+    raise(Exception('No main class in FanfictionScraper.py'))
+    exit(1)
