@@ -41,6 +41,20 @@ def ReviewScraper(storyid, rate_limit=3):
     @param  {str}               storyid         The id for a particular story.
     @param  {int}               rate_limit      rate limit (in seconds)
     @return {}
+
+    Discussion:
+        * Reviews on FanFiction.Net may either be anonymous or tied to the user
+          who left the review.
+        * Reviews for a story are located at address:
+          https://www.fanfiction.net/r/[sid]/0/1/
+        * /0/ represents all reviews for a story, /1/ is a page, and there are
+          up to 15 reviews per page.
+        * Incrementing the 0 gives the reviews for a particular chapter.
+
+    Page Layout:
+        * Reviews are stored in an html table of up to 15 elements.
+        * A review may be thought of as a 4-tuple:
+            (userid, chapter_reviewed, date, review_text)
     """
 
     pass
