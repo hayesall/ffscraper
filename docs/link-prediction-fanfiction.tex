@@ -27,20 +27,24 @@ alexander.hayes@utdallas.edu\\
 \maketitle
 \begin{abstract}
 \begin{quote}
-The author presents work on link prediction in FanFiction Networks. Code and documentation for the experiments are available on GitHub.\footnote{\texttt{https://github.com/batflyer/FanFiction-\\Collaborative-Filtering}}
+The author performs link prediction on metadata scraped from FanFiction.Net (the world's largest repository of user-submitted fanfiction), applying statistical relational learning to predict authorship. Code and documentation for the experiments are available on GitHub.\footnote{\texttt{https://github.com/batflyer/FanFiction-\\Collaborative-Filtering}}
 \end{quote}
 \end{abstract}
 
 \section{Introduction}
 A ``fanfic'' is a creative work where an author adapts or extends an existing work of fiction.
 
-\section{Background}
+\subsection{Background}
 
-FanFiction has been observed through a variety of academic lenses; such as psychology, sociology, and computer science. Though a variety of fields have taken interest in the subject, many contend that the subject is poorly understood within academic literature, or point out that attempts to analyze FanFiction communities in the past have been performed in disruptive manners \cite{larsen2011fandom}. \cite{barnes2015fanfiction} noted that the subject at the time of writing had almost entirely been understood from a qualitative standpoint.
+FanFiction has been observed through a variety of academic lenses; such as psychology, sociology, and computer science. Though many have taken interest in the subject, a common viewpoint is that fanfiction is poorly understood within academic literature, or that previous attempts to analyze fanfiction communities have been performed in disruptive manners \cite{larsen2011fandom}. \cite{barnes2015fanfiction} noted that the subject at the time of writing had almost entirely been understood from a qualitative standpoint.
+
+\subsection{Related Work}
 
 Within the last few years has there been an increase in large-scale computational analyses. \cite{milli2016beyond} compared fanfiction with the source (canon) text that stories originated from, sentiment analysis on the reviews, and predicted how readers would respond to characters in a chapter. \cite{yin2017no} published an anonymized set of metadata, and presented evidence that the majority of users were English-speaking students based on the time of year FanFiction.Net users were most active.
 
 \section{Experiments}
+
+The authors employ a state-of-the-art statistical relational learning system: \textit{BoostSRL} in order to both model the communities as entities, relations, and attributes. All authors and stories on FanFiction.Net may be identified by a unique integer, these identifiers (and their respective meta-data) lend themselves naturally to a relational representation. The meta-data about each story includes attributes such as the number of words, number of chapters, main characters, genres, and rating. Stories may be introduced with a summary in fewer than 384 characters, but these are not included here. Stories may be divided into chapters, and chapters may be reviewed by the author or other community members.
 
 \bibliographystyle{aaai}
 \bibliography{link-prediction-fanfiction}
