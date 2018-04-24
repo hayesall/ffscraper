@@ -28,7 +28,7 @@ import time
 
 from FanfictionScraper import FanfictionScraper
 from ReviewScraper import ReviewScraper
-from Utils import *
+import Utils
 
 __author__ = 'Alexander L. Hayes (@batflyer)'
 __copyright__ = 'Copyright (c) 2018 Alexander L. Hayes'
@@ -63,9 +63,9 @@ if __name__ == '__main__':
         story = FanfictionScraper(args.sid)
 
         predicates = []
-        predicates.append(PredicateLogicBuilder('author', story['aid'], story['sid']))
-        predicates.append(PredicateLogicBuilder('rating', story['sid'], story['rating']))
-        predicates.append(PredicateLogicBuilder('genre', story['sid'], story['genre']))
+        predicates.append(Utils.PredicateLogicBuilder('author', story['aid'], story['sid']))
+        predicates.append(Utils.PredicateLogicBuilder('rating', story['sid'], story['rating']))
+        predicates.append(Utils.PredicateLogicBuilder('genre', story['sid'], story['genre']))
 
         for p in predicates:
             print(p)
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     elif args.file:
         # Import the sids from the file and scrape each of them.
 
-        sids = ImportStoryIDs(args.file)
+        sids = Utils.ImportStoryIDs(args.file)
 
         # Values for the progress bar.
         number_of_sids = len(sids)
@@ -88,15 +88,15 @@ if __name__ == '__main__':
         for sid in sids:
 
             # Helpful progress bar
-            progress(counter, number_of_sids, status='Currently on: {0}'.format(sid))
+            progress(counter, number_of_sids, status='Currently on: {0}...'.format(sid))
             counter += 1
 
             story = FanfictionScraper(sid)
 
             predicates = []
-            predicates.append(PredicateLogicBuilder('author', story['aid'], story['sid']))
-            predicates.append(PredicateLogicBuilder('rating', story['sid'], story['rating']))
-            predicates.append(PredicateLogicBuilder('genre', story['sid'], story['genre']))
+            predicates.append(Utils.PredicateLogicBuilder('author', story['aid'], story['sid']))
+            predicates.append(Utils.PredicateLogicBuilder('rating', story['sid'], story['rating']))
+            predicates.append(Utils.PredicateLogicBuilder('genre', story['sid'], story['genre']))
 
             with open('facts.txt', 'a') as f:
                 for p in predicates:
