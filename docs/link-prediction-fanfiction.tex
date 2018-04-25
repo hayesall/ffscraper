@@ -45,13 +45,18 @@ FanFiction has been observed through a variety of academic lenses; such as psych
 
 \subsection{Related Work}
 
-Within the last few years has there been an increase in large-scale computational analyses. \cite{milli2016beyond} compared fanfiction with the source (canon) text that stories originated from, sentiment analysis on the reviews, and predicted how readers would respond to characters in a chapter. \cite{yin2017no} published an anonymized set of metadata, and presented evidence that the majority of users were English-speaking students based on the time of year FanFiction.Net users were most active.
+Within the last few years has there been an increase in large-scale computational analyses. \cite{milli2016beyond} compared fanfiction with the source (canon) text that stories originated from, performed sentiment analysis on the reviews, and predicted how readers would respond to characters in a chapter. \cite{yin2017no} published an anonymized set of metadata, and presented evidence that the majority of users were English-speaking students based on the time of year FanFiction.Net users were most active.
 
 \section{Experiments}
 
 The authors employ a state-of-the-art statistical relational learning system: \textit{BoostSRL} in order to both model the communities as entities, relations, and attributes. All authors and stories on FanFiction.Net may be identified by a unique integer, these identifiers (and their respective meta-data) lend themselves naturally to a relational representation. The meta-data about each story includes attributes such as the number of words, number of chapters, main characters, genres, and rating. Stories may be introduced with a summary in fewer than 384 characters, but these are not included here. Stories may be divided into chapters, and chapters may be reviewed by the author or other community members.
 
-\includegraphics[scale=0.05]{Coraline_network.png}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{Coraline_network.png}
+    \caption{Network of Coraline fanfiction. Blue nodes represent stories, violet nodes represent users. Darker edges represent authorship, lighter edges represent a review.}
+    \label{fig:my_label}
+\end{figure}
 
 \section{Appendix}
 
