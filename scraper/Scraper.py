@@ -22,6 +22,7 @@ from bs4 import BeautifulSoup as bs
 from progress import progress
 
 import argparse
+import copy
 import re
 import requests
 import time
@@ -88,6 +89,8 @@ if __name__ == '__main__':
         # Import the sids from the file and scrape each of them.
 
         sids = Utils.ImportStoryIDs(args.file)
+        # Initialize a remaining_sids list as a copy of sids
+        remaining_sids = copy.copy(sids)
 
         # Values for the progress bar.
         number_of_sids = len(sids)
@@ -99,7 +102,20 @@ if __name__ == '__main__':
             progress(counter, number_of_sids, status='Currently on: {0}...'.format(sid))
             counter += 1
 
-            story = FanfictionScraper(sid)
+            try:
+                story = FanfictionScraper(sid)
+            except:
+
+                # If errors are encountered, alert the user and dump the remaining sids.
+                error_file = 'remaining_sids.error'
+
+                print('Encountered an error while scraping {0}.'.format(sid))
+                print('Remaining sids will be dumped to file: {}'.format(error_file))
+                with open(error_file, 'w') as f:
+                    for s in remaining_sids:
+                        f.write(s + '\n')
+
+                exit(1)
 
             predicates = []
             # schema will be used with cytoscape
@@ -117,6 +133,9 @@ if __name__ == '__main__':
                 for reviewer in reviewers:
                     predicates.append(Utils.PredicateLogicBuilder('reviewed', reviewer, story['sid']))
                     schema.append('user' + reviewer + ' reviewed story' + story['sid'])
+
+            # Remove the current sid from the list of remaining_sids
+            remaining_sids.remove(sid)
 
             with open('facts.txt', 'a') as f:
                 for p in predicates:
