@@ -4,3 +4,6 @@ setParam: nodeSize=2.
 mode: author(+aid, +sid).
 mode: rating(+sid, #rating).
 mode: genre(+sid, #genre).
+
+mode: reviewed(+aid, -sid).
+mode: reviewed(-aid, +sid).
