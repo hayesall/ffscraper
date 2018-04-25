@@ -102,6 +102,11 @@ if __name__ == '__main__':
             story = FanfictionScraper(sid)
 
             predicates = []
+            # schema will be used with cytoscape
+            schema = []
+
+            schema.append('user' + story['aid'] + ' wrote story' + story['sid'])
+
             predicates.append(Utils.PredicateLogicBuilder('author', story['aid'], story['sid']))
             predicates.append(Utils.PredicateLogicBuilder('rating', story['sid'], story['rating']))
             predicates.append(Utils.PredicateLogicBuilder('genre', story['sid'], story['genre']))
@@ -111,7 +116,12 @@ if __name__ == '__main__':
 
                 for reviewer in reviewers:
                     predicates.append(Utils.PredicateLogicBuilder('reviewed', reviewer, story['sid']))
+                    schema.append('user' + reviewer + ' reviewed story' + story['sid'])
 
             with open('facts.txt', 'a') as f:
                 for p in predicates:
+                    f.write(p + '\n')
+
+            with open('cytoscape.txt', 'a') as f:
+                for p in schema:
                     f.write(p + '\n')
