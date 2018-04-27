@@ -106,16 +106,14 @@ if __name__ == '__main__':
                 story = FanfictionScraper(sid)
             except:
 
-                # If errors are encountered, alert the user and dump the remaining sids.
-                error_file = 'remaining_sids.error'
+                # If errors are encountered, alert the user and dump the problematic sid.
+                error_file = 'UNKNOWN.txt'
 
-                print('Encountered an error while scraping {0}.'.format(sid))
-                print('Remaining sids will be dumped to file: {}'.format(error_file))
-                with open(error_file, 'w') as f:
-                    for s in remaining_sids:
-                        f.write(s + '\n')
-
-                exit(1)
+                print('\nEncountered an error while scraping {0}.'.format(sid))
+                print('Adding sid to file: {0}'.format(error_file))
+                with open(error_file, 'a') as f:
+                    f.write(sid + '\n')
+                continue
 
             predicates = []
             # schema will be used with cytoscape
