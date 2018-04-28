@@ -18,3 +18,7 @@ FanFiction.Net was established in 1998 and is among the world's largest collecti
 
 * [1] Milli, Smitha and David Bamman, "Beyond Canonical Texts: A Computational Analysis of Fanfiction." Proceedings of the 2016 Conference on Empirical Methods in Natural Language Processing.
 * [2] Yin, K., Aragon, C., Evans, S. and Katie Davis. "Where No One Has Gone Before: A Meta-Dataset of the World's Largest Fanfiction Repository." Proceedings of the 2017 CHI Conference on Human Factors in Computing Systems. ACM, 2017.
+
+### ATTRIBUTION
+
+* [monochrome](https://github.com/dyutibarma/monochrome) is a Jekyll theme by [@dyutibarma](https://github.com/dyutibarma/). Used under the terms of the [MIT License](https://github.com/dyutibarma/monochrome/blob/master/license.md).
