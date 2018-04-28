@@ -57,6 +57,8 @@ if __name__ == '__main__':
     mode.add_argument('-r', '--review', type=str,
         help='Scrape the reviews for a particular story.')
 
+    parser.add_argument('-V', '--version', action='store_true',
+        help='Print the version number, then exit.')
     parser.add_argument('-v', '--verbose', action='store_true',
         help='Increase verbosity to help with debugging.')
     parser.add_argument('-o', '--output', type=str,
@@ -64,6 +66,10 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    if args.version:
+        print(__version__)
+        exit(0)
+    
     if args.sid:
         # Scrape the contents of a single file from FanFiction.Net
         story = FanfictionScraper(args.sid)
