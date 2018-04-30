@@ -58,15 +58,41 @@ when FanfictionScraper.py already picks this information up.
 
 class Profile:
 
-    def __init__(self, uid):
+    def __init__(self, uid, rate_limit=3):
         self.uid = uid
-        pass
+        self.rate_limit = rate_limit
+        self.profile = self.ScrapeProfile(uid)
 
-    def ScrapeProfile(self):
-        pass
+        '''
+        if 'beta' in self.profile:
+            self.beta = ScrapeBeta(self, uid)
+        '''
 
-    def ScrapeBeta(self):
+    def ScrapeProfile(self, uid):
+        """
+        Scrapes the data from a user's profile on FanFiction.Net
+
+        @method ScrapeProfile
+        @param  {uid}           uid     user id number for a particular user
+        @return {dict}          prof    dictionary of profile information
+        """
+
+        # Rate Limit
+        time.sleep(self.rate_limit)
+
+        # Make a request to the site, make a BeautifulSoup instance for the html
+        r = requests.get('https://www.fanfiction.net/u/' + uid)
+        html = r.text
+        soup = bs(html, 'html.parser')
+
+        # "Favorite Stories" are stored in a z-list favstories
+        favorite_stories = soup.find_all('div', {'class': 'z-list favstories'})
+        print(len(favorite_stories))
+
+    def ScrapeBeta(self, uid):
         pass
 
 if __name__ == '__main__':
+    # This behavior is for testing, will likely be deprecated or changed later.
+
     exit(0)
