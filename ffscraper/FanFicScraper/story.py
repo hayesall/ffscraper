@@ -22,8 +22,9 @@ A script for scraping a single fanfic from FanFiction.Net
 from __future__ import print_function
 from __future__ import division
 
-from bs4 import BeautifulSoup as bs
+from . import review
 
+from bs4 import BeautifulSoup as bs
 import requests
 import time
 
@@ -99,7 +100,7 @@ def FanfictionScraper(storyid, rate_limit=3):
         if 'Reviews' in m:
 
             num_of_reviews = int(m.split()[1])
-            users = ReviewIDScraper(storyid, num_of_reviews)
+            users = review.ReviewIDScraper(storyid, num_of_reviews)
             story['Reviewers'] = users
 
     #print(metadata)
