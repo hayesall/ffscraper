@@ -16,13 +16,14 @@
 from __future__ import print_function
 from __future__ import division
 
+"""
+## FanfictionScraper.py
+
+A script for scraping a single fanfic from FanFiction.Net
+"""
+
 from bs4 import BeautifulSoup as bs
 
-# progress.py is used under the terms of the MIT license
-from progress import progress
-
-import argparse
-import re
 import requests
 import time
 
