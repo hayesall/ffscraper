@@ -57,6 +57,8 @@ if __name__ == '__main__':
     mode.add_argument('-r', '--review', type=str,
         help='Scrape the reviews for a particular story.')
 
+    parser.add_argument('-V', '--version', action='store_true',
+        help='Print the version number, then exit.')
     parser.add_argument('-v', '--verbose', action='store_true',
         help='Increase verbosity to help with debugging.')
     parser.add_argument('-o', '--output', type=str,
@@ -64,6 +66,10 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    if args.version:
+        print(__version__)
+        exit(0)
+    
     if args.sid:
         # Scrape the contents of a single file from FanFiction.Net
         story = FanfictionScraper(args.sid)
@@ -106,16 +112,14 @@ if __name__ == '__main__':
                 story = FanfictionScraper(sid)
             except:
 
-                # If errors are encountered, alert the user and dump the remaining sids.
-                error_file = 'remaining_sids.error'
+                # If errors are encountered, alert the user and dump the problematic sid.
+                error_file = 'UNKNOWN.txt'
 
-                print('Encountered an error while scraping {0}.'.format(sid))
-                print('Remaining sids will be dumped to file: {}'.format(error_file))
-                with open(error_file, 'w') as f:
-                    for s in remaining_sids:
-                        f.write(s + '\n')
-
-                exit(1)
+                print('\nEncountered an error while scraping {0}.'.format(sid))
+                print('Adding sid to file: {0}'.format(error_file))
+                with open(error_file, 'a') as f:
+                    f.write(sid + '\n')
+                continue
 
             predicates = []
             # schema will be used with cytoscape

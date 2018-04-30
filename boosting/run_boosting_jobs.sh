@@ -83,14 +83,14 @@ function runBoostingJob() {
 
     # Learning (either softmax or not)
     if [[ $softmaxboosting ]]; then
-      java -jar v1-0.jar -l -softm -alpha 0.5 -beta -2 -train learn/ -target author -trees 15 > learnout.log
+      java -jar v1-0.jar -l -softm -alpha 0 -beta 2 -train learn/ -target author -trees 20 > learnout.log
     else
-      java -jar v1-0.jar -l -train learn/ -target author -trees 15 > learnout.log
+      java -jar v1-0.jar -l -train learn/ -target author -trees 20 > learnout.log
     fi
     echo "    Learning complete."
 
     # Inference
-    java -jar v1-0.jar -i -model learn/models/ -test infer/ -target author -trees 15 -aucJarPath . > inferout.log
+    java -jar v1-0.jar -i -model learn/models/ -test infer/ -target author -trees 20 -aucJarPath . > inferout.log
     echo "    Inference complete."
 
     # Record the results to the outputfile.
