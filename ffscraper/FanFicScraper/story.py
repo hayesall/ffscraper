@@ -13,28 +13,20 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+"""
+## FanfictionScraper.py
+
+A script for scraping a single fanfic from FanFiction.Net
+"""
+
 from __future__ import print_function
 from __future__ import division
 
+from . import review
+
 from bs4 import BeautifulSoup as bs
-
-# progress.py is used under the terms of the MIT license
-from progress import progress
-
-import argparse
-import re
 import requests
 import time
-
-from ReviewScraper import ReviewIDScraper
-
-__author__ = 'Alexander L. Hayes (@batflyer)'
-__copyright__ = 'Copyright (c) 2018 Alexander L. Hayes'
-__license__ = 'Apache'
-__version__ = '0.0.1'
-__maintainer__ = __author__
-__email__ = 'alexander@batflyer.net'
-__status__ = 'Prototype'
 
 def FanfictionScraper(storyid, rate_limit=3):
     """
@@ -108,7 +100,7 @@ def FanfictionScraper(storyid, rate_limit=3):
         if 'Reviews' in m:
 
             num_of_reviews = int(m.split()[1])
-            users = ReviewIDScraper(storyid, num_of_reviews)
+            users = review.ReviewIDScraper(storyid, num_of_reviews)
             story['Reviewers'] = users
 
     #print(metadata)
