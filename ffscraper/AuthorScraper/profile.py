@@ -13,21 +13,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from __future__ import print_function
-
-from bs4 import BeautifulSoup as bs
-
-import requests
-import time
-
-__author__ = 'Alexander L. Hayes (@batflyer)'
-__copyright__ = 'Copyright (c) 2018 Alexander L. Hayes'
-__license__ = 'Apache'
-__version__ = '0.0.1'
-__maintainer__ = __author__
-__email__ = 'alexander@batflyer.net'
-__status__ = 'Prototype'
-
 """
 A user's profile on FanFiction.Net may consist of some combination of a:
         1. uid (integer)
@@ -55,6 +40,13 @@ Beta profile users additionally have additional properties:
 In practice, the 'My Stories' section is likely to be duplicate information
 when FanfictionScraper.py already picks this information up.
 """
+
+from __future__ import print_function
+
+from bs4 import BeautifulSoup as bs
+
+import requests
+import time
 
 class Profile:
 

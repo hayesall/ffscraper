@@ -13,21 +13,19 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from __future__ import print_function
-from __future__ import division
-
 """
 ## FanfictionScraper.py
 
 A script for scraping a single fanfic from FanFiction.Net
 """
 
+from __future__ import print_function
+from __future__ import division
+
 from bs4 import BeautifulSoup as bs
 
 import requests
 import time
-
-from ReviewScraper import ReviewIDScraper
 
 def FanfictionScraper(storyid, rate_limit=3):
     """

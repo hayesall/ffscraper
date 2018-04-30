@@ -40,3 +40,6 @@ __version__ = '0.0.1'
 __maintainer__ = __author__
 __email__ = 'alexander@batflyer.net'
 __status__ = 'Prototype'
+
+from . import FanFicScraper
+from . import AuthorScraper
