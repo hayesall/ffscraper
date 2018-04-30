@@ -27,3 +27,46 @@ __version__ = '0.0.1'
 __maintainer__ = __author__
 __email__ = 'alexander@batflyer.net'
 __status__ = 'Prototype'
+
+"""
+A user's profile on FanFiction.Net may consist of some combination of a:
+        1. uid (integer)
+        2. username (string)
+        3. beta profile (bool)
+        4. My Stories
+        5. Favorite Stories
+        6. Favorite Authors
+        7. Communities
+
+Beta profile users additionally have additional properties:
+    Beta Description:
+        1. Beta Bio (general description as a beta reader)
+        2. My Strengths (beta, writing, or reading strength)
+        3. My Weaknesses (beta, writing, or reading weaknesses)
+        4. Preferred (types of stories I prefer over others)
+        5. Would Rather Not (I do not beta read for these stories)
+
+    Beta Preferences:
+        1. Language
+        2. Content Rating (range of acceptable fiction ratings)
+        3. Categories (categories in black are ones this beta has authored for)
+        4. Genres (genres in black are ones this beta has authored for)
+
+In practice, the 'My Stories' section is likely to be duplicate information
+when FanfictionScraper.py already picks this information up.
+"""
+
+class Profile:
+
+    def __init__(self, uid):
+        self.uid = uid
+        pass
+
+    def ScrapeProfile(self):
+        pass
+
+    def ScrapeBeta(self):
+        pass
+
+if __name__ == '__main__':
+    exit(0)
