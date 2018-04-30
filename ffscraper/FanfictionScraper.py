@@ -28,14 +28,6 @@ import time
 
 from ReviewScraper import ReviewIDScraper
 
-__author__ = 'Alexander L. Hayes (@batflyer)'
-__copyright__ = 'Copyright (c) 2018 Alexander L. Hayes'
-__license__ = 'Apache'
-__version__ = '0.0.1'
-__maintainer__ = __author__
-__email__ = 'alexander@batflyer.net'
-__status__ = 'Prototype'
-
 def FanfictionScraper(storyid, rate_limit=3):
     """
     Scrapes data from a story on FanFiction.Net

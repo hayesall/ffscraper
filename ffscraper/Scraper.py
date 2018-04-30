@@ -16,16 +16,11 @@
 from __future__ import print_function
 from __future__ import division
 
-from bs4 import BeautifulSoup as bs
-
 # progress.py is used under the terms of the MIT license
 from progress import progress
 
 import argparse
 import copy
-import re
-import requests
-import time
 
 from FanfictionScraper import FanfictionScraper
 from ReviewScraper import ReviewScraper
@@ -69,7 +64,7 @@ if __name__ == '__main__':
     if args.version:
         print(__version__)
         exit(0)
-    
+
     if args.sid:
         # Scrape the contents of a single file from FanFiction.Net
         story = FanfictionScraper(args.sid)
