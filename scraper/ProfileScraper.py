@@ -90,6 +90,28 @@ class Profile:
         print(len(favorite_stories))
 
     def ScrapeBeta(self, uid):
+        """
+        Scrapes the data from a user's beta profile on FanFiction.Net
+
+        # NOTE: This may be more appropriate as a separate method for scraping
+        beta profiles (https://www.fanfiction.net/betareaders/)
+
+        If a user is not a beta reader, their 'beta' page will list a warning
+        which reads "[username] is not a registered beta reader."
+
+        @method ScrapeBeta
+        @param  {uid}           uid     user id number for a particular user
+        @param  {dict}          prof
+        """
+
+        # Rate Limit
+        time.sleep(self.rate_limit)
+
+        # Make a request to the site, make a BeautifulSoup instance for the html
+        r = requests.get('https://www.fanfiction.net/beta/' + uid)
+        html = r.text
+        soup = bs(html, 'html.parser')
+
         pass
 
 if __name__ == '__main__':
