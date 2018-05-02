@@ -20,7 +20,7 @@ from bs4 import BeautifulSoup as bs
 import requests
 import time
 
-def ScrapeBeta(self, uid):
+def ScrapeBeta(uid, rate_limit=3):
     """
     Scrapes the data from a user's beta profile on FanFiction.Net
 
@@ -36,7 +36,7 @@ def ScrapeBeta(self, uid):
     """
 
     # Rate Limit
-    time.sleep(self.rate_limit)
+    time.sleep(rate_limit)
 
     # Make a request to the site, make a BeautifulSoup instance for the html
     r = requests.get('https://www.fanfiction.net/beta/' + uid)

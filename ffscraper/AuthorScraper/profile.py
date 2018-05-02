@@ -48,7 +48,7 @@ from bs4 import BeautifulSoup as bs
 import requests
 import time
 
-def ScrapeProfile(self, uid, rate_limit=3):
+def ScrapeProfile(uid, rate_limit=3):
     """
     Scrapes the data from a user's profile on FanFiction.Net
 
@@ -68,6 +68,8 @@ def ScrapeProfile(self, uid, rate_limit=3):
 
     # "Favorite Stories" are stored in a z-list favstories
     favorite_stories = soup.find_all('div', {'class': 'z-list favstories'})
+
+    print(favorite_stories[0])
     print(len(favorite_stories))
 
 
