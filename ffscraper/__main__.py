@@ -54,7 +54,10 @@ parser.add_argument('-V', '--version', action='store_true',
     help='Print the version number, then exit.')
 parser.add_argument('-v', '--verbose', action='store_true',
     help='Increase verbosity to help with debugging.')
-parser.add_argument('-o', '--output', type=str,
+
+parser.add_argument('-co', '--Cout', type=str, default='cytoscape.txt',
+    help='Set output file for cytoscape network file.')
+parser.add_argument('-o', '--output', type=str, default='facts.txt',
     help='Set output file the information scraped.')
 
 args = parser.parse_args()
@@ -134,10 +137,10 @@ elif args.file:
         # Remove the current sid from the list of remaining_sids
         remaining_sids.remove(sid)
 
-        with open('facts.txt', 'a') as f:
+        with open(args.output, 'a') as f:
             for p in predicates:
                 f.write(p + '\n')
 
-        with open('cytoscape.txt', 'a') as f:
+        with open(args.Cout, 'a') as f:
             for p in schema:
                 f.write(p + '\n')
