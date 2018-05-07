@@ -55,7 +55,107 @@ Within the last few years has there been an increase in large-scale computationa
 
 \section{Experiments}
 
-The authors employ a state-of-the-art statistical relational learning system: \textit{BoostSRL} in order to both model the communities as entities, relations, and attributes. All authors and stories on FanFiction.Net may be identified by a unique integer, these identifiers (and their respective meta-data) lend themselves naturally to a relational representation. The meta-data about each story includes attributes such as the number of words, number of chapters, main characters, genres, and rating. Stories may be introduced with a summary in fewer than 384 characters, but these are not included here. Stories may be divided into chapters, and chapters may be reviewed by the author or other community members.
+The author employs a state-of-the-art statistical relational learning system: \textit{BoostSRL} in order to both model the communities as entities, relations, and attributes. All authors and stories on FanFiction.Net may be identified by a unique integer, these identifiers (and their respective meta-data) lend themselves naturally to a relational representation. The meta-data about each story includes attributes such as the number of words, number of chapters, main characters, genres, and rating. Stories may be introduced with a summary in fewer than 384 characters, but these are not included here. Stories may be divided into chapters, and chapters may be reviewed by the author or other community members.
+
+Four communities on FanFiction.Net were selected for these experiments from the books category: \textit{Coraline}\footnote{https://www.fanfiction.net/book/Coraline/}, \textit{Hitchhiker's Guide to the Galaxy}\footnote{https://www.fanfiction.net/book/Hitchhiker-s-Guide-\\to-the-Galaxy/}, \textit{To Kill a Mockingbird}\footnote{https://www.fanfiction.net/book/To-Kill-a-Mockingbird/}, and \textit{Dragonriders of Pern series}\footnote{https://www.fanfiction.net/book/Dragonriders-of-Pern-series/}. These were selected because each of them had a similar number of stories (between 575 and 625).
+
+From these stories, facts were made global while positive examples were assigned randomly to a learning or inference set.  Negative examples were sampled under the closed-world assumption from the respective positive set, but since the number of negatives is determined from the positives, the number reported for each learning and inference set is an average from 100 samples.
+
+% Coraline: Learn Negative: 160,873
+% Coraline: Infer Negative: 29,215
+
+% Hitchhikers: Learn Negative: 177,362
+% Hitchhikers: Infer Negative: 32,322
+
+% Dragonriders: Learn Negative: 174,607
+% Dragonriders: Infer Negative: 31,833
+
+% Mockingbird: Learn Negative: 190,051
+% Mockingbird: Infer Negative: 34,563
+
+%        Facts:
+% Coraline    : 4,981
+% Dragonriders: 6,678
+% Hitchhikers : 5,240
+% Mockingbird : 3,793
+
+\begin{tabular}{|c c|c c|c c|}
+\hline
+& & \multicolumn{2}{|c|}{Learning} & \multicolumn{2}{|c|}{Inference} \\
+\hline
+     Community & \# facts & pos & neg & pos & neg \\
+     \hline
+     Coraline & 4,981 & 402 & 160,873 & 173 & 29,2151 \\
+     Dragonriders & 6,678 & 421 & 174,607 & 179 & 31,833 \\
+     Hitchhikers & 5,240 & 423 & 177,362 & 180 & 32,322 \\
+     Mockingbird & 3,793 & 438 & 190,051 & 187 & 34,563 \\
+\hline
+\end{tabular}
+
+preliminary results are reported for predicting story authorship.
+
+% Tables are quite large, it will likely be easier if they extend across both columns via a figure.
+% https://texblog.org/2012/07/30/single-column-figuretable-in-a-two-multi-column-environment/
+\begin{figure*}[ht]
+\centering
+
+% Table 1: RDN-Boost Precision
+\begin{tabular}{|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
+\hline
+\multicolumn{5}{|c|}{\textbf{RDN-Boost Precision}: trained on row, tested on column}\\
+\hline
+    & Coraline & Dragonriders & Hitchhikers & Mockingbird \\
+    \hline
+     Coraline & 0.014 & 0.009 & 0.013 & 0.012 \\
+     Dragonriders & 0.008 & 0.009 & 0.009 & 0.013 \\
+     Hitchhikers & 0.013 & 0.008 & 0.019 & 0.014 \\
+     Mockingbird & 0.014 & 0.007 & 0.013 & 0.034 \\
+\hline
+\end{tabular}
+
+% Table 2: RDN-Boost Recall
+\begin{tabular}{|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
+\hline
+\multicolumn{5}{|c|}{\textbf{RDN-Boost Recall}: trained on row, tested on column}\\
+\hline
+    & Coraline & Dragonriders & Hitchhikers & Mockingbird\\
+    \hline
+    Coraline & 0.119 & 0.092 & 0.062 & 0.065 \\
+    Dragonriders & 0.037 & 0.083 & 0.063 & 0.050 \\
+    Hitchhikers & 0.206 & 0.227 & 0.193 & 0.075 \\
+    Mockingbird & 0.331 & 0.415 & 0.258 & 0.210 \\
+\hline
+\end{tabular}
+
+% Table 3: Softm-Boost Precision
+\begin{tabular}{|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
+\hline
+\multicolumn{5}{|c|}{\textbf{Softm-Boost Precision}: trained on row, tested on column}\\
+\hline
+    & Coraline & Dragonriders & Hitchhikers & Mockingbird \\
+    \hline
+     Coraline & 0.014 & 0.011 & 0.013 & 0.001 \\
+     Dragonriders & 0.009 & 0.010 & 0.008 & 0.008 \\
+     Hitchhikers & 0.010 & 0.008 & 0.023 & 0.016 \\
+     Mockingbird & 0.009 & 0.008 & 0.015 & 0.025 \\
+\hline
+\end{tabular}
+
+% Table 4: Softm-Boost Recall
+\begin{tabular}{|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
+\hline
+\multicolumn{5}{|c|}{\textbf{Softm-Boost Recall}: trained on row, tested on column}\\
+\hline
+    & Coraline & Dragonriders & Hitchhikers & Mockingbird \\
+    \hline
+     Coraline & 1.0 & 1.0 & 1.0 & 1.0 \\
+     Dragonriders & 1.0 & 1.0 & 1.0 & 1.0 \\
+     Hitchhikers & 1.0 & 1.0 & 1.0 & 1.0 \\
+     Mockingbird & 1.0 & 1.0 & 1.0 & 1.0 \\
+\hline
+\end{tabular}
+
+\end{figure*}
 
 \begin{figure}
     \centering
