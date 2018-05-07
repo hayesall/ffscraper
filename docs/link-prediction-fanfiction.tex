@@ -64,9 +64,9 @@ Collaborative filtering in networks or graph models may be performed in supervis
 
 Unsupervised global similarity methods such as PageRank may provide insight to what is popular across all users in the a network, but may be less insightful when certain parts of the network are only relevant to certain users. Local similarity methods such as random walks may focus on parts of the network which are most relevant to certain users, but may not reach far enough outside of what the user is already aware of.
 
-Supervised methods for collaborative filtering turn the previous into a learning problem where it is assumed that the similarity between two entities or relationships may be inferred from some observed properties of the data. These methods come with all of the difficulties of machine learning, such as balancing overfitting against generalization; but a prominent difficulty of these methods lies in the imbalance between the false positives and false negatives. A recommendation system that recommends everything to a user is not 
+Supervised methods for collaborative filtering turn the previous into a learning problem where the similarity between two entities or relationships may be inferred from some observed properties of the data. These methods come with all of the difficulties of machine learning, such as balancing overfitting against generalization; but a prominent difficulty of these methods lies in the imbalance between the false positives and false negatives. A recommendation system that recommends everything to a user rather than tailoring results to their interests is not a good recommendation system.
 
-\cite{yang2017combining} recently
+\cite{yang2017combining} recently applied statistical relational learning methods to a large-scale job recommendation system, using both content filtering and collaborative filtering on four months of data to recommend jobs to a user in a supervised manner.  They found that changing the cost function to put a higher weight on false positives led to better results. Inspired by this work, we build on the recommendation system aspects but apply it to predicting authorship of a story and evaluate whether the structure learned in one network may easily be transferred to another.
 
 \section{Experiments}
 
@@ -142,7 +142,7 @@ The author employs a state-of-the-art statistical relational learning system: \t
 
 For both RDN-Boost and Softm-Boost, all settings were kept constant, including: tree depth, node size, mode settings, and number of regression trees learned during training (15). The only exception was the use of soft margin with false negative ($\alpha$) weight of 0 and a false positive ($\beta$) weight of 2 in order to increase the cost of returning false positives.
 
-\cite{yang2017combining} used similar settings to these and claimed that learning more than 20 trees had little affect on overall performance. Varying these settings with careful tuning may lead to better performance, but is not explored within the context of this paper.
+\cite{yang2017combining} used similar settings to these and claimed that learning more than 20 trees had little affect on overall performance. Varying these settings with careful tuning may lead to better performance, but this possibility is not explored within the context of this paper.
 
 \section{Results}
 
@@ -236,7 +236,7 @@ The terms of service for FanFiction.Net state the limitations of launching autom
     \item ``You agree not to collect or harvest any personally identifiable information... for any commercial solicitation purposes.''
 \end{itemize}
 
-Scraping FanFiction.Net may be accomplished via the \texttt{ffscraper/} Python package in this repository. The core documentation pertaining to each script and their respective functions are contained therein, this discussion pertains to the high-level idea of what they accomplish.
+Scraping FanFiction.Net may be accomplished via the \texttt{ffscraper/} Python package in this repository. The software is distributed under an Apache-2.0 License and the core documentation pertaining to each script and their respective functions are contained therein.  This discussion pertains to the high-level idea of what they accomplish.
 
 All users and stories on FanFiction.Net may be identified via a unique id-number. These id-numbers may be used to directly access one or the other, for example: user \textit{124}'s profile may be found by sending a request to https://www.fanfiction.net/u/124. In a similar manner, story \textit{124} would be at https://www.fanfiction.net/s/124. Reviews for a story follow the pattern \texttt{/r/125/0/1/}, where the first integer corresponds the story-id, the second integer to a certain chapter (or 0 for all reviews), and the third is a page number (a maximum of 15 reviews are displayed on each page, so any overflow will be on subsequent pages).
 
