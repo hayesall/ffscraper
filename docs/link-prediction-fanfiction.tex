@@ -78,6 +78,8 @@ The author poses and answers the following questions:
     \item[\textbf{Q3}:] Does soft margin improve performance over the default settings?
 \end{enumerate}
 
+\subsection{Creating a FanFiction Data Set}
+
 All authors and stories on FanFiction.Net may be identified by a unique integer, which naturally lends itself to a relational representation. The meta-data about each story includes attributes such as the number of words, number of chapters, main characters, genres, and rating. Stories may be introduced with a summary in fewer than 384 characters, but these are not included here. Stories may be divided into chapters, and chapters may be reviewed by the author or other community members.
 
 Four communities on the FanFiction.Net books category were selected for these experiments: \textit{Coraline}\footnote{https://www.fanfiction.net/book/Coraline/}, \textit{Hitchhiker's Guide to the Galaxy}\footnote{https://www.fanfiction.net/book/Hitchhiker-s-Guide-\\to-the-Galaxy/}, \textit{To Kill a Mockingbird}\footnote{https://www.fanfiction.net/book/To-Kill-a-Mockingbird/}, and \textit{Dragonriders of Pern series}\footnote{https://www.fanfiction.net/book/Dragonriders-of-Pern-series/}.
@@ -132,15 +134,15 @@ Though more features (such as word count, correlation metrics, review sentiment)
 
 These communities were selected because they shared a similar number of stories (between 575 and 625). Though the communities were similar by this metric, there was a prominent difference in the number of facts: \textit{To Kill a Mockingbird} had the highest number of stories, but the fewest facts; \textit{Dragonriders of Pern series} had the second-fewest number of stories, but a significantly more facts. This is because the number of facts associated with a community is heavily biased by the number of reviews across a community's stories. This may be a way to gain insight into community activity in subsequent studies.
 
+\subsection{Learning and Inference with BoostSRL}
+
 Facts were made available during both learning and inference whereas positive examples were assigned randomly to a learning or inference set to make predictions.  Negative examples were sampled under the closed-world assumption from the respective positive set, but because the number of negatives is determined from the positives: the number reported for each learning and inference set is an average from 100 samples.
 
 The author employs a state-of-the-art statistical relational learning system: \textit{BoostSRL} to learn relational dependency networks over the features. Two methods are compared: boosted relational dependency networks (RDN-Boost), and boosted relational dependency networks with soft margin (Softm-Boost). For both methods, the learning and inference sets were sampled from master sets for each community, and precision/recall scores were calculated based on an average over ten independently sampled runs. To evaluate how general these models are, the learning and inference sets may be drawn from two different communities: learning may be done on a set of stories drawn from \textit{Coraline}, but inference may be performed on stories from the \textit{Hitchhiker's Guide to the Galaxy} community.
 
-% softm-alpha: 0, softm-beta: 2
+For both RDN-Boost and Softm-Boost, all settings were kept constant, including: tree depth, node size, mode settings, and number of regression trees learned during training (15). The only exception was the use of soft margin with false negative ($\alpha$) weight of 0 and a false positive ($\beta$) weight of 2 in order to increase the cost of returning false positives.
 
-preliminary results are reported for predicting story authorship.
-
-
+\cite{yang2017combining} used similar settings to these and claimed that learning more than 20 trees had little affect on overall performance. Varying these settings with careful tuning may lead to better performance, but is not explored within the context of this paper.
 
 \section{Results}
 
@@ -157,8 +159,8 @@ If the number of facts available during learning lead to better results on the g
 \begin{table*}[ht]
 \centering
 
-% Table 1: RDN-Boost Precision
-\begin{tabular}{|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
+        % Table 1: RDN-Boost Precision
+        \begin{tabular}{|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
         \hline
         \multicolumn{5}{|c|}{RDN-Boost Precision}\\
         \hline
@@ -219,6 +221,8 @@ If the number of facts available during learning lead to better results on the g
 \end{table*}
 
 \section{Conclusion}
+
+These results are still fairly early in the process toward something which could become a collaborative filtering engine for FanFiction.Net, or a full paper extending what is known about several communities on FanFiction.Net. The evaluation criteria presented here were measured against what is an extremely difficult task of predicting authorship from a small number of features. In addition to the open problems left over from these results, some of the key takeaway messages should be these: (1) FanFiction.Net has rich social network properties which should be further explored within the statistical relational learning community, and the computer science community more broadly. (2) FanFiction.Net is the embodiment of a time-evolving social network, where people who share common interests read, write, and review stories.
 
 \section{Appendix}
 
