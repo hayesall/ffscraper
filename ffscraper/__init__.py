@@ -14,22 +14,15 @@
 #   limitations under the License.
 
 """
-# FFScraper Docstring
+Yet another set of scraping tools for FanFiction.Net
 
-> "Yet another set of scraping tools for FanFiction.Net."
+Requirements:
 
-If you are in Jupyter, you can see this via the following:
+  * bs4
+  * requests
 
-```python
-from IPython.display import display, Markdown
-import ffscraper as ffs
-
-display(Markdown(ffs.__doc__))
-```
-
-### Examples
-
-`>>> import ffscraper as ffs`
+Example:
+    >>> import ffscraper as ffs
 
 """
 
