@@ -22,5 +22,5 @@ This repository's purpose is twofold: creating robust open-source tools for scra
 
 ### Attribution
 
-* This was originally part of a final project for Professor Vibhav Gogate's Spring 2018 [Advanced Machine Learning](www.hlt.utdallas.edu/~vgogate/ml/2018s/index.html) class at the University of Texas at Dallas. This version of the code, TeX, and .pdf are tagged as v0.1.0.
+* This was originally part of a final project for Professor Vibhav Gogate's Spring 2018 [Advanced Machine Learning](http://www.hlt.utdallas.edu/~vgogate/ml/2018s/index.html) class at the University of Texas at Dallas. This version of the code, TeX, and .pdf are tagged as v0.1.0.
 * [monochrome](https://github.com/dyutibarma/monochrome) is a Jekyll theme by [@dyutibarma](https://github.com/dyutibarma/). Used under the terms of the [MIT License](https://github.com/dyutibarma/monochrome/blob/master/license.md).
