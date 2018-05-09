@@ -1,0 +1,28 @@
+sudo: false
+
+language: python
+
+env:
+  - SH=bash
+
+python:
+  - "2.7"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+  - "3.6-dev"
+  - "3.7-dev"
+
+cache: pip
+
+install:
+  - "pip install -r ffscraper/tests/requirements.txt"
+
+script:
+  - coverage run ffscraper/tests/tests.py
+
+before_install:
+  pip install codecov
+
+after_success:
+  codecov
