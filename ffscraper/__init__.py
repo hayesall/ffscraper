@@ -14,6 +14,9 @@
 #   limitations under the License.
 
 """
+ffscraper
+=========
+
 Yet another set of scraping tools for FanFiction.Net
 
 Requirements:
@@ -22,14 +25,15 @@ Requirements:
   * requests
 
 Example:
-    >>> import ffscraper as ffs
+
+>>> import ffscraper as ffs
 
 """
 
 __author__ = 'Alexander L. Hayes (@batflyer)'
 __copyright__ = 'Copyright (c) 2018 Alexander L. Hayes'
 __license__ = 'Apache License, Version 2.0'
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 __maintainer__ = __author__
 __email__ = 'alexander@batflyer.net'
 __status__ = 'Prototype'

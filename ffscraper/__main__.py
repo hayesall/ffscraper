@@ -16,9 +16,6 @@
 from __future__ import print_function
 from __future__ import division
 
-# progress.py is used under the terms of the MIT license
-from progress import progress
-
 import argparse
 import copy
 
@@ -28,8 +25,8 @@ import Utils
 
 __author__ = 'Alexander L. Hayes (@batflyer)'
 __copyright__ = 'Copyright (c) 2018 Alexander L. Hayes'
-__license__ = 'Apache'
-__version__ = '0.0.1'
+__license__ = 'Apache License, Version 2.0'
+__version__ = '0.1.1'
 __maintainer__ = __author__
 __email__ = 'alexander@batflyer.net'
 __status__ = 'Prototype'
@@ -101,7 +98,7 @@ elif args.file:
     for sid in sids:
 
         # Helpful progress bar
-        progress(counter, number_of_sids, status='Currently on: {0}...'.format(sid))
+        Utils.progress(counter, number_of_sids, status='Currently on: {0}...'.format(sid))
         counter += 1
 
         try:
