@@ -19,9 +19,9 @@ from __future__ import division
 import argparse
 import copy
 
-from FanFicScraper import story
-from FanFicScraper import review
-import Utils
+from .FanFicScraper import story
+from .FanFicScraper import review
+from . import Utils
 
 __author__ = 'Alexander L. Hayes (@batflyer)'
 __copyright__ = 'Copyright (c) 2018 Alexander L. Hayes'
