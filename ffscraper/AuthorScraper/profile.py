@@ -13,34 +13,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-"""
-A user's profile on FanFiction.Net may consist of some combination of a:
-        1. uid (integer)
-        2. username (string)
-        3. beta profile (bool)
-        4. My Stories
-        5. Favorite Stories
-        6. Favorite Authors
-        7. Communities
-
-Beta profile users additionally have additional properties:
-    Beta Description:
-        1. Beta Bio (general description as a beta reader)
-        2. My Strengths (beta, writing, or reading strength)
-        3. My Weaknesses (beta, writing, or reading weaknesses)
-        4. Preferred (types of stories I prefer over others)
-        5. Would Rather Not (I do not beta read for these stories)
-
-    Beta Preferences:
-        1. Language
-        2. Content Rating (range of acceptable fiction ratings)
-        3. Categories (categories in black are ones this beta has authored for)
-        4. Genres (genres in black are ones this beta has authored for)
-
-In practice, the 'My Stories' section is likely to be duplicate information
-when FanfictionScraper.py already picks this information up.
-"""
-
 from __future__ import print_function
 
 from bs4 import BeautifulSoup as bs
@@ -50,12 +22,31 @@ import time
 
 def ScrapeProfile(uid, rate_limit=3):
     """
-    Scrapes the data from a user's profile on FanFiction.Net
+    Scrapes the data from a user's profile on FanFiction.Net.
 
-    @method ScrapeProfile
-    @param  {uid}           uid         user id number for a particular user
-    @param  {int}           rate_limit  time in seconds to enforce
-    @return {dict}          prof        dictionary of profile information
+    A user's profile may consist of some combination of a:
+      1. uid
+      2. username
+      3. beta profile
+      4. My Stories
+      5. Favorite Stories
+      6. Favorite Authors
+      7. Communities
+
+    In practice, the 'My Stories' section may duplicate information when
+    FanfictionScraper.py already picks this up elsewhere. Nevertheless,
+    this information may be of greater interest in certain contexts,
+    such as explicitly looking at all of the stories that someone authored.
+
+    :param uid: User-id number for a person on FanFiction.Net.
+    :type uid: str.
+    :param rate_limit: Number of seconds to wait at the start of function call
+                       in order to enforce scraper niceness.
+    :type rate_limit: int.
+    :returns: Currently returns nothing.
+
+    >>> from ffscraper.AuthorScraper.profile import ScrapeProfile
+    >>> ScrapeProfile('123')
     """
 
     # Rate Limit

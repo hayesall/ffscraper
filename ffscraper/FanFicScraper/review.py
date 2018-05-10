@@ -13,6 +13,14 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+"""
++----------------------+---------------------------------------------------+
+|      **Name**        |                  **Description**                  |
++----------------------+---------------------------------------------------+
+|       review.py      | A module for scraping reviews from FanFiction.Net |
++----------------------+---------------------------------------------------+
+"""
+
 from __future__ import print_function
 from __future__ import division
 
@@ -23,17 +31,36 @@ import time
 
 def ReviewIDScraper(storyid, reviews_num, rate_limit=3):
     """
-    Scrapes the reviews for a certain story, but only returns the user ids.
+    Scrapes the reviews for a certain story, returning the user ids.
 
-    ### Deprecation Warning;
-    This is most likely a short-term hack for this specific function.
-    As ReviewScraper.py is finalized this will likely be absorbed into
-    the ReviewScraper function or reimagined as a function in a class.
+    .. warning::
+       This is most likely a short-term hack for this specific function.
+       As ``review.py`` is finalized this will likely be absorbed into the
+       ReviewScraper function or reimagined as a function in a class.
 
-    @method ReviewIDScraper
+    :param storyid: Story-id number for a story on FanFiction.Net.
+    :type storyid: str.
+    :param reviews_num: Number of reviews according to the metadata.
+    :type reviews_num: int.
+    :param rate_limit: Number of seconds to wait at the start of function call
+                    in order to enforce scraper niceness.
+    :type rate_limit: int.
+    :returns: A list of user-ids with duplicates removed.
+    :rtype: list of strings.
 
-    @return {list}      list of user ids with duplicates removed.
+    Example (*the output presented here has been altered*):
+
+        In this example, the story with ID '1812' was found to have 13 reviews.
+        Of those 13 reviews, four of them were associated with a person. This
+        means that some people may have reviews the story multiple times, or
+        some people reviewed the story anonymously.
+
+    >>> from ffscraper.FanFicScraper.review import ReviewIDScraper
+    >>> reviews_for_1812 = ReviewIDScraper('1812', 13)
+    >>> print(reviews_for_1812)
+    ['18381', '18325', '9312', '1832']
     """
+
     number_of_pages = (reviews_num // 15) + 1
 
     user_id_list = []
@@ -67,11 +94,15 @@ def ReviewScraper(storyid, reviews_num, rate_limit=3):
     """
     Scrapes the reviews for a certain story.
 
-    @method ReviewScraper
-    @param  {str}               storyid         The id for a particular story.
-    @param  {int}               reviews_num     The number of reviews in metadata
-    @param  {int}               rate_limit      rate limit (in seconds)
-    @return {}
+    :param storyid: Story-id number for a story on FanFiction.Net.
+    :type storyid: str.
+    :param reviews_num: Number of reviews according to the metadata.
+    :type reviews_num: int.
+    :param rate_limit: Number of seconds to wait at the start of function call
+                    in order to enforce scraper niceness.
+    :type rate_limit: int.
+    :returns: A list of user-ids with duplicates removed.
+    :rtype: list of strings.
 
     Discussion:
         * Reviews on FanFiction.Net may either be anonymous or tied to the user

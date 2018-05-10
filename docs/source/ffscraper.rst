@@ -20,15 +20,6 @@ ffscraper\.Utils module
     :undoc-members:
     :show-inheritance:
 
-ffscraper\.progress module
---------------------------
-
-.. automodule:: ffscraper.progress
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
 Module contents
 ---------------
 

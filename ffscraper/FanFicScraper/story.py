@@ -14,9 +14,11 @@
 #   limitations under the License.
 
 """
-## FanfictionScraper.py
-
-A script for scraping a single fanfic from FanFiction.Net
++----------------------+---------------------------------------------------+
+|      **Name**        |                  **Description**                  |
++----------------------+---------------------------------------------------+
+|       story.py       | A module for scraping a story from FanFiction.Net |
++----------------------+---------------------------------------------------+
 """
 
 from __future__ import print_function
@@ -30,12 +32,25 @@ import time
 
 def FanfictionScraper(storyid, rate_limit=3):
     """
-    Scrapes data from a story on FanFiction.Net
+    .. versionadded:: 0.1.0
 
-    @method FanfictionScraper
-    @param  {str}               storyid         the id for a particular story
-    @param  {int}               rate_limit      rate limit (in seconds)
-    @return {dict}              story           dictionary of data and metadata
+    Scrapes a story on FanFiction.Net
+
+    :param storyid: Story-id number for a story on FanFiction.Net.
+    :type uid: str.
+    :param rate_limit: Number of seconds to wait at the start of function call
+                       in order to enforce scraper niceness.
+    :type rate_limit: int.
+    :returns: Dictionary of data and metadata for the story.
+    :rtype: dict.
+
+    Example (*the output presented here has been altered*):
+
+    >>> from ffscraper.FanFicScraper.story import FanfictionScraper
+    >>> story123 = FanfictionScraper('123')
+    >>> print(story)
+    {'genre': 'Western', 'sid': '123', 'Reviewers': ['12', '24'],
+    'rating': 'Rated: Fiction  K', 'aid': "241"}
     """
 
     # Rate limit
