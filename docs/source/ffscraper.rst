@@ -6,8 +6,8 @@ Subpackages
 
 .. toctree::
 
-    ffscraper.AuthorScraper
-    ffscraper.FanFicScraper
+    ffscraper.author
+    ffscraper.fanfic
 
 Submodules
 ----------

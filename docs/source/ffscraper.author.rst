@@ -1,21 +1,21 @@
-ffscraper\.AuthorScraper package
+ffscraper\.author package
 ================================
 
 Submodules
 ----------
 
-ffscraper\.AuthorScraper\.beta module
+ffscraper\.author\.beta module
 -------------------------------------
 
-.. automodule:: ffscraper.AuthorScraper.beta
+.. automodule:: ffscraper.author.beta
     :members:
     :undoc-members:
     :show-inheritance:
 
-ffscraper\.AuthorScraper\.profile module
+ffscraper\.author\.profile module
 ----------------------------------------
 
-.. automodule:: ffscraper.AuthorScraper.profile
+.. automodule:: ffscraper.author.profile
     :members:
     :undoc-members:
     :show-inheritance:
@@ -24,7 +24,7 @@ ffscraper\.AuthorScraper\.profile module
 Module contents
 ---------------
 
-.. automodule:: ffscraper.AuthorScraper
+.. automodule:: ffscraper.author
     :members:
     :undoc-members:
     :show-inheritance:

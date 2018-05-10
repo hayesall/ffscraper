@@ -1,29 +1,29 @@
-ffscraper\.FanFicScraper package
+ffscraper\.fanfic package
 ================================
 
 Submodules
 ----------
 
-ffscraper\.FanFicScraper\.metadata module
+ffscraper\.fanfic\.metadata module
 -----------------------------------------
 
-.. automodule:: ffscraper.FanFicScraper.metadata
+.. automodule:: ffscraper.fanfic.metadata
     :members:
     :undoc-members:
     :show-inheritance:
 
-ffscraper\.FanFicScraper\.review module
+ffscraper\.fanfic\.review module
 ---------------------------------------
 
-.. automodule:: ffscraper.FanFicScraper.review
+.. automodule:: ffscraper.fanfic.review
     :members:
     :undoc-members:
     :show-inheritance:
 
-ffscraper\.FanFicScraper\.story module
+ffscraper\.fanfic\.story module
 --------------------------------------
 
-.. automodule:: ffscraper.FanFicScraper.story
+.. automodule:: ffscraper.fanfic.story
     :members:
     :undoc-members:
     :show-inheritance:
@@ -32,7 +32,7 @@ ffscraper\.FanFicScraper\.story module
 Module contents
 ---------------
 
-.. automodule:: ffscraper.FanFicScraper
+.. automodule:: ffscraper.fanfic
     :members:
     :undoc-members:
     :show-inheritance:

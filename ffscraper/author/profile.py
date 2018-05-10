@@ -20,7 +20,7 @@ from bs4 import BeautifulSoup as bs
 import requests
 import time
 
-def ScrapeProfile(uid, rate_limit=3):
+def scraper(uid, rate_limit=3):
     """
     Scrapes the data from a user's profile on FanFiction.Net.
 
@@ -45,8 +45,8 @@ def ScrapeProfile(uid, rate_limit=3):
     :type rate_limit: int.
     :returns: Currently returns nothing.
 
-    >>> from ffscraper.AuthorScraper.profile import ScrapeProfile
-    >>> ScrapeProfile('123')
+    >>> from ffscraper.author import profile
+    >>> profile123 = profile.scraper('123')
     """
 
     # Rate Limit

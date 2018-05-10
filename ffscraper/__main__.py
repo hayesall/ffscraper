@@ -19,14 +19,14 @@ from __future__ import division
 import argparse
 import copy
 
-from .FanFicScraper import story
-from .FanFicScraper import review
+from .fanfic import story
+from .fanfic import review
 from . import Utils
 
 __author__ = 'Alexander L. Hayes (@batflyer)'
 __copyright__ = 'Copyright (c) 2018 Alexander L. Hayes'
 __license__ = 'Apache License, Version 2.0'
-__version__ = '0.1.2'
+__version__ = '0.2.0'
 __maintainer__ = __author__
 __email__ = 'alexander@batflyer.net'
 __status__ = 'Prototype'
@@ -65,7 +65,7 @@ if args.version:
 
 if args.sid:
     # Scrape the contents of a single file from FanFiction.Net
-    current_story = story.FanfictionScraper(args.sid)
+    current_story = story.scraper(args.sid)
 
     predicates = []
     predicates.append(Utils.PredicateLogicBuilder('author', current_story['aid'], current_story['sid']))
@@ -102,7 +102,7 @@ elif args.file:
         counter += 1
 
         try:
-            current_story = story.FanfictionScraper(sid)
+            current_story = story.scraper(sid)
         except:
 
             # If errors are encountered, alert the user and dump the problematic sid.

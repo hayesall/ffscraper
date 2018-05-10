@@ -55,7 +55,7 @@ def ReviewIDScraper(storyid, reviews_num, rate_limit=3):
         means that some people may have reviews the story multiple times, or
         some people reviewed the story anonymously.
 
-    >>> from ffscraper.FanFicScraper.review import ReviewIDScraper
+    >>> from ffscraper.fanfic.review import ReviewIDScraper
     >>> reviews_for_1812 = ReviewIDScraper('1812', 13)
     >>> print(reviews_for_1812)
     ['18381', '18325', '9312', '1832']
@@ -157,5 +157,5 @@ def ReviewScraper(storyid, reviews_num, rate_limit=3):
 
 if __name__ == '__main__':
 
-    raise(Exception('No main class in ReviewScraper.py'))
+    raise(Exception('No main class in story.py'))
     exit(1)

@@ -30,7 +30,7 @@ from bs4 import BeautifulSoup as bs
 import requests
 import time
 
-def FanfictionScraper(storyid, rate_limit=3):
+def scraper(storyid, rate_limit=3):
     """
     .. versionadded:: 0.1.0
 
@@ -46,9 +46,9 @@ def FanfictionScraper(storyid, rate_limit=3):
 
     Example (*the output presented here has been altered*):
 
-    >>> from ffscraper.FanFicScraper.story import FanfictionScraper
-    >>> story123 = FanfictionScraper('123')
-    >>> print(story)
+    >>> from ffscraper.fanfic import story
+    >>> story123 = story.scraper('123')
+    >>> print(story123)
     {'genre': 'Western', 'sid': '123', 'Reviewers': ['12', '24'],
     'rating': 'Rated: Fiction  K', 'aid': "241"}
     """
@@ -125,5 +125,5 @@ def FanfictionScraper(storyid, rate_limit=3):
 
 if __name__ == '__main__':
 
-    raise(Exception('No main class in FanfictionScraper.py'))
+    raise(Exception('No main class in story.py'))
     exit(1)

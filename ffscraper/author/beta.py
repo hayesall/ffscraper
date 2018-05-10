@@ -20,7 +20,7 @@ from bs4 import BeautifulSoup as bs
 import requests
 import time
 
-def ScrapeBeta(uid, rate_limit=3):
+def scraper(uid, rate_limit=3):
     """
     Scrapes the data from a user's beta profile on FanFiction.Net.
 
@@ -57,8 +57,8 @@ def ScrapeBeta(uid, rate_limit=3):
 
     Example:
 
-    >>> from ffscraper.AuthorScraper.beta import ScrapeBeta
-    >>> ScrapeBeta('123')
+    >>> from ffscraper.author import beta
+    >>> beta.scraper('123')
     """
 
     # Rate Limit
@@ -68,3 +68,8 @@ def ScrapeBeta(uid, rate_limit=3):
     r = requests.get('https://www.fanfiction.net/beta/' + uid)
     html = r.text
     soup = bs(html, 'html.parser')
+
+if __name__ == '__main__':
+    # This behavior is for testing, will likely be deprecated or changed later.
+
+    exit(0)
