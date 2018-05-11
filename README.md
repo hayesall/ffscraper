@@ -1,6 +1,6 @@
 # Collaborative Filtering in FanFiction Networks
 
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ffscraper.svg?style=flat-square) ![PyPI](https://img.shields.io/pypi/v/ffscraper.svg?style=flat-square) ![license](https://img.shields.io/github/license/batflyer/FanFiction-Collaborative-Filtering.svg?style=flat-square)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ffscraper.svg?style=flat-square) ![PyPI](https://img.shields.io/pypi/v/ffscraper.svg?style=flat-square) ![license](https://img.shields.io/pypi/l/ffscraper.svg?style=flat-square)
 
 "ffscraper" Yet another set of scraping tools for FanFiction.Net
 
