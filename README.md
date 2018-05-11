@@ -12,7 +12,7 @@ This repository's purpose is twofold: creating robust open-source tools for scra
 
 ### Docs and Installation
 
-Full documentation on [readthedocs](http://fanfiction-collaborative-filtering.readthedocs.io/en/latest/).
+Full documentation on [fanfiction-collaborative-filtering.readthedocs.io](http://fanfiction-collaborative-filtering.readthedocs.io/en/latest/).
 
 From PyPi:
 
