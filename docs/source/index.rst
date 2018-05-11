@@ -24,6 +24,7 @@ ffscraper
   .. image:: https://img.shields.io/pypi/pyversions/ffscraper.svg?style=flat-square
   .. image:: https://img.shields.io/pypi/v/ffscraper.svg?style=flat-square
   .. image:: https://img.shields.io/pypi/l/ffscraper.svg?style=flat-square
+  .. image:: https://img.shields.io/readthedocs/fanfiction-collaborative-filtering/stable.svg?style=flat-square
 
 FanFiction.Net was established in 1998 and is among the world's largest collection of user-submitted fanfiction (works of fanfiction authored by fans of existing stories; such as movies, books, or TV shows).  Recently the large amount of easily-available user content has drawn interest in analyzing the content and creative differences between original works and their fanfiction counterparts [#]_, and [#]_ created an anonymized dataset of the metadata.
 
