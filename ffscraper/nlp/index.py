@@ -244,7 +244,3 @@ def normalize(string, language='english'):
 
         # Yield results
         yield stemmed_stopped_tokens
-
-if __name__ == '__main__':
-    print('No main method in ffscraper.nlp.index')
-    exit(1)

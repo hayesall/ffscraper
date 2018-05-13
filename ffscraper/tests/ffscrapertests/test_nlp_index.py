@@ -43,8 +43,8 @@ class IndexTest(unittest.TestCase):
         sentences = [sentence for sentence in sentence_generator]
         expected = [[u'19th-centuri', 'russia', 'write', u'letter', 'write',
         u'letter', '', 'put', u'write', u'happen', u'mind', ''],
-        ['paper', 'feel', 'better', 'feel', 'better', '', u"it'", 'like',
-        'kind', u'clariti', 'letter', 'done', u'sign', '']]
+        ['paper', 'feel', 'better', 'feel', 'better', '', 'like', 'kind',
+        u'clariti', 'letter', 'done', u'sign', '']]
 
         self.assertEqual(sentences, expected)
 
