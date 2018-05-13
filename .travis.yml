@@ -20,7 +20,7 @@ cache:
 
 install:
   - "pip install -r ffscraper/tests/requirements.txt"
-  - "python -c 'import nltk; nltk.download(\"stopwords\")'"
+  - "python -m nltk.downloader -d $HOME/nltk_data"
 
 script:
   - coverage run ffscraper/tests/tests.py
