@@ -26,6 +26,7 @@ script:
   - coverage run ffscraper/tests/tests.py
 
 before_install:
+  export NLTK_DATA="$HOME/nltk_data"
   pip install codecov
 
 after_success:
