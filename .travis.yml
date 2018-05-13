@@ -13,10 +13,14 @@ python:
   - "3.6-dev"
   - "3.7-dev"
 
-cache: pip
+cache:
+  pip: true
+  directories:
+    - $HOME/nltk_data
 
 install:
   - "pip install -r ffscraper/tests/requirements.txt"
+  - "python -c 'import nltk; nltk.download(\"stopwords\")'"
 
 script:
   - coverage run ffscraper/tests/tests.py
