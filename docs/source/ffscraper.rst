@@ -8,6 +8,7 @@ Subpackages
 
     ffscraper.author
     ffscraper.fanfic
+    ffscraper.nlp
 
 Submodules
 ----------

@@ -13,15 +13,20 @@ python:
   - "3.6-dev"
   - "3.7-dev"
 
-cache: pip
+cache:
+  pip: true
+  directories:
+    - $HOME/nltk_data
 
 install:
   - "pip install -r ffscraper/tests/requirements.txt"
+  - "python -m nltk.downloader stopwords punkt -d $HOME/nltk_data"
 
 script:
   - coverage run ffscraper/tests/tests.py
 
 before_install:
+  export NLTK_DATA="$HOME/nltk_data";
   pip install codecov
 
 after_success:
