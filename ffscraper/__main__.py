@@ -26,7 +26,7 @@ from . import Utils
 __author__ = 'Alexander L. Hayes (@batflyer)'
 __copyright__ = 'Copyright (c) 2018 Alexander L. Hayes'
 __license__ = 'Apache License, Version 2.0'
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 __maintainer__ = __author__
 __email__ = 'alexander@batflyer.net'
 __status__ = 'Prototype'
