@@ -18,6 +18,11 @@ here =  path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
+# nltk needs punkt and stopwords for ffscraper.nlp
+import nltk
+nltk.download('punkt')
+nltk.download('stopwords')
+
 # Import the package to read out the metadata.
 import ffscraper as ffs
 
