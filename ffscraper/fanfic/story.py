@@ -30,6 +30,43 @@ from bs4 import BeautifulSoup as bs
 import requests
 import time
 
+def _category_and_fandom(soup):
+    """
+    .. versionadded:: 0.3.0
+
+    Returns the FanFiction category and fandom from the soup.
+
+    * Category is one of nine possible categories from ``['Anime/Manga', 'Books',
+      'Cartoons', 'Comics', 'Games', 'Misc', 'Movies', 'Plays/Musicals', 'TV']``
+    * Fandom is the specific sub-category, whereas category may be
+     ``Plays/Musicals``, the fandom could be ``RENT``, ``Wicked``, etc.
+
+    :param soup: Soup containing a page from FanFiction.Net
+    :type soup: bs4.BeautifulSoup class
+
+    :returns: Tuple where the first item is the category and the second item is
+              the fandom.
+
+    .. code-block:: python
+
+                    from ffscraper.fanfic.story import __category_and_fandom
+                    from bs4 import BeautifulSoup as bs
+                    import requests
+
+                    r = requests.get('https://www.fanfiction.net/s/123')
+                    html = r.text
+                    soup = bs(html, 'html.parser')
+
+                    print(_category_and_fandom(soup))
+
+    .. code-block:: bash
+
+                    ('Plays/Musicals', 'Wicked')
+    """
+
+    c_f = soup.find('div', {'id': 'pre_story_links'}).find_all('a', href=True)
+    return c_f[0].text, c_f[1].text
+
 def scraper(storyid, rate_limit=3):
     """
     .. versionadded:: 0.1.0
@@ -46,11 +83,18 @@ def scraper(storyid, rate_limit=3):
 
     Example (*the output presented here has been altered*):
 
-    >>> from ffscraper.fanfic import story
-    >>> story123 = story.scraper('123')
-    >>> print(story123)
-    {'genre': 'Western', 'sid': '123', 'Reviewers': ['12', '24'],
-    'rating': 'Rated: Fiction  K', 'aid': "241"}
+    .. code-block:: python
+
+                    from ffscraper.fanfic import story
+
+                    # story.scraper is a handy interface for all of these.
+                    story123 = story.scraper('123')
+                    print(story123)
+
+    .. code-block:: bash
+
+                    {'genre': 'Western', 'sid': '123', 'Reviewers':
+                    ['12', '24'], 'rating': 'Rated: Fiction  K', 'aid': "241"}
     """
 
     # Rate limit
@@ -62,9 +106,7 @@ def scraper(storyid, rate_limit=3):
     soup = bs(html, 'html.parser')
 
     # Get the category and fandom information.
-    c_f = soup.find('div', {'id': 'pre_story_links'}).find_all('a', href=True)
-    category = c_f[0].text
-    fandom = c_f[1].text
+    category, fandom = _category_and_fandom(soup)
 
     # Get the metadata describing properties of the story.
     # This should contain the metadata line (e.g. rating, genre, words, etc.)
@@ -122,8 +164,3 @@ def scraper(storyid, rate_limit=3):
 
     #print(soup.prettify())
     return story
-
-if __name__ == '__main__':
-
-    raise(Exception('No main class in story.py'))
-    exit(1)
