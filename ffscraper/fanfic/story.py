@@ -46,6 +46,7 @@ def _category_and_fandom(soup):
 
     :returns: Tuple where the first item is the category and the second item is
               the fandom.
+    :rtype: tuple.
 
     .. code-block:: python
 
@@ -66,6 +67,36 @@ def _category_and_fandom(soup):
 
     c_f = soup.find('div', {'id': 'pre_story_links'}).find_all('a', href=True)
     return c_f[0].text, c_f[1].text
+
+def _title(soup):
+    """
+    .. versionadded:: 0.3.0
+
+    Returns the fanfic's title from the soup.
+
+    :param soup: Soup containing a page from FanFiction.Net
+    :type soup: bs4.BeautifulSoup class
+
+    :returns: The title of the fanfic as a string.
+    :rtype: str.
+
+    .. code-block:: python
+
+                    from ffscraper.fanfic.story import _title
+                    from bs4 import BeautifulSoup as bs
+                    import requests
+
+                    r = requests.get('https://www.fanfiction.net/s/123')
+                    html = r.text
+                    soup = bs(html, 'html.parser')
+
+                    print(_title(soup))
+
+    .. code-block:: bash
+
+                    'There Once was a Man from Gilneas'
+    """
+    return soup.find('b', {'class': 'xcontrast_txt'}).text
 
 def scraper(storyid, rate_limit=3):
     """
@@ -115,7 +146,8 @@ def scraper(storyid, rate_limit=3):
     metadata = [s.strip() for s in metadata.split('-')]
 
     # Title from <b class='xcontrast_txt'>...</b>
-    title = soup.find('b', {'class': 'xcontrast_txt'}).text
+    title = _title(soup)
+    #title = soup.find('b', {'class': 'xcontrast_txt'}).text
 
     # Abstract and story are identified by <div class='xcontrast_txt'>...</div>
     abstract_and_story = soup.find_all('div', {'class': 'xcontrast_txt'})

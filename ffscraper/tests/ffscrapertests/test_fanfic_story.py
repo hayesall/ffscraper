@@ -25,7 +25,7 @@ import unittest
 sys.path.append('./')
 from ffscraper.fanfic import story
 
-class StoryTest(unittest.TestCase):
+class CategoryAndFandomTest(unittest.TestCase):
 
     def test_category_and_fandom_1(self):
         # 1: Check Plays/Musicals category and fandom.
@@ -76,3 +76,22 @@ class StoryTest(unittest.TestCase):
         self.assertEqual(fandom, u'Attack on Titan/進撃の巨人')
 
         self.assertTrue(True)
+
+class TitleTest(unittest.TestCase):
+
+    def test_title_1(self):
+        # 1. Test generic input.
+
+        soup = bs("<b class='xcontrast_txt'>Hello World</b>", 'html.parser')
+        self.assertEqual(story._title(soup), 'Hello World')
+
+    def test_title_2(self):
+        # 2. Test with unicode characters.
+        soup = bs(u"<b class='xcontrast_txt'>Attack on Titan/進撃の巨人</b>",
+        'html.parser')
+        self.assertEqual(story._title(soup), u'Attack on Titan/進撃の巨人')
+
+    def test_title_3(self):
+        # 3. Test with potentially strange input: no title.
+        soup = bs("<b class='xcontrast_txt'></b>", 'html.parser')
+        self.assertEqual(story._title(soup), '')
