@@ -98,6 +98,36 @@ def _title(soup):
     """
     return soup.find('b', {'class': 'xcontrast_txt'}).text
 
+def _timestamps(soup):
+    """
+    .. versionadded:: 0.3.0
+
+    'Publication' and 'last updated' are the two timestamps which are available.
+    If only one timestamp is listed, the story's update and publication time
+    should be the same.
+
+    :param soup: Soup containing a page from FanFiction.Net
+    :type soup: bs4.BeautifulSoup class
+
+    :returns: Tuple where the first item is the publication time and the second
+              item is the update time.
+    :rtype: tuple
+    """
+
+    metadata_html = soup.find('span', {'class': 'xgray xcontrast_txt'})
+
+    timestamps = metadata_html.find_all(attrs={'data-xutime': True})
+
+    # Logic for dealing with the possibility that only one timestamp exists.
+    if len(timestamps) == 1:
+        when_updated = timestamps[0]['data-xutime']
+        when_published = when_updated
+    else:
+        when_updated = timestamps[0]['data-xutime']
+        when_published = timestamps[1]['data-xutime']
+
+    return when_published, when_updated
+
 def scraper(storyid, rate_limit=3):
     """
     .. versionadded:: 0.1.0
@@ -145,25 +175,12 @@ def scraper(storyid, rate_limit=3):
     metadata = metadata_html.text.replace('Sci-Fi', 'SciFi')
     metadata = [s.strip() for s in metadata.split('-')]
 
-    # Title from <b class='xcontrast_txt'>...</b>
-    title = _title(soup)
-    #title = soup.find('b', {'class': 'xcontrast_txt'}).text
-
     # Abstract and story are identified by <div class='xcontrast_txt'>...</div>
     abstract_and_story = soup.find_all('div', {'class': 'xcontrast_txt'})
     abstract = abstract_and_story[0].text
     story_text = abstract_and_story[1].text
 
-    # 'Publication' and 'last updated' are the two timestamps which are available.
-    # If only one timestamp is listed, the story's update and publication time
-    # should be the same.
-    timestamps = metadata_html.find_all(attrs={'data-xutime': True})
-    if len(timestamps) == 1:
-        when_updated = timestamps[0]['data-xutime']
-        when_published = when_updated
-    else:
-        when_updated = timestamps[0]['data-xutime']
-        when_published = timestamps[1]['data-xutime']
+    when_published, when_updated = _timestamps(soup)
 
     # There are several links on the page, the 2nd is a link to the author's
     # page. Get the second link href tag (which will look something like '/u/1838183/thisname')
@@ -173,11 +190,11 @@ def scraper(storyid, rate_limit=3):
     story = {
         'sid': storyid,
         'aid': authorid,
-        #'category': category,
-        #'fandom': fandom,
-        #'title': title,
-        #'published': when_published,
-        #'updated': when_updated,
+        'category': category,
+        'fandom': fandom,
+        'title': _title(soup),
+        'published': when_published,
+        'updated': when_updated,
         'rating': metadata[0],
         'genre': metadata[2]
         #'metadata': metadata,

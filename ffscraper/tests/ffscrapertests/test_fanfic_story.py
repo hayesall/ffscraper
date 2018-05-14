@@ -95,3 +95,34 @@ class TitleTest(unittest.TestCase):
         # 3. Test with potentially strange input: no title.
         soup = bs("<b class='xcontrast_txt'></b>", 'html.parser')
         self.assertEqual(story._title(soup), '')
+
+class TimestampsTest(unittest.TestCase):
+
+    def test_timestamp_1(self):
+        # 1. Test case where Published and Updated are the same.
+
+        soup = bs(u"""<span class='xgray xcontrast_txt'>Rated:
+        <a class='xcontrast_txt' href='https://www.fictionratings.com/'
+        target='rating'>Fiction  K+</a> - French  - Words: 2,100 - Reviews:
+        <a href='/r/15/'>103</a> - Favs: 3 - Follows: 5 - Published:
+        <span data-xutime='1123840800'>8/12/2005</span> - id: 15 </span>""",
+        'html.parser')
+
+        published, updated = story._timestamps(soup)
+        self.assertEqual(published, '1123840800')
+        self.assertEqual(updated, '1123840800')
+
+    def test_timestamp_2(self):
+        # 2. Test case where Published and Updated are different.
+
+        soup = bs(u"""<span class='xgray xcontrast_txt'>Rated:
+        <a class='xcontrast_txt' href='https://www.fictionratings.com/'
+        target='rating'>Fiction  T</a> - English - Chapters: 6   -
+        Words: 6,198 - Reviews: <a href='/r/200/'>19</a> -
+        Updated: <span data-xutime='183818181'>5/5/2000</span> -
+        Published: <span data-xutime='12392811'>5/5/1999</span> -
+        id: 200 </span>""", 'html.parser')
+
+        published, updated = story._timestamps(soup)
+        self.assertEqual(published, '12392811')
+        self.assertEqual(updated, '183818181')
