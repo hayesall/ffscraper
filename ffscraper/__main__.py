@@ -18,11 +18,13 @@ from __future__ import division
 
 import argparse
 import copy
+import logging
 
 from .fanfic import story
 from .fanfic import review
 from . import Utils
 
+# <Metadata>
 __author__ = 'Alexander L. Hayes (@batflyer)'
 __copyright__ = 'Copyright (c) 2018 Alexander L. Hayes'
 __license__ = 'Apache License, Version 2.0'
@@ -30,7 +32,22 @@ __version__ = '0.3.0-prerelease'
 __maintainer__ = __author__
 __email__ = 'alexander@batflyer.net'
 __status__ = 'Prototype'
+# </Metadata>
 
+# <Logging>
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+log_handler = logging.FileHandler('main_log.log')
+log_handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+log_handler.setFormatter(formatter)
+
+logger.addHandler(log_handler)
+logger.info('Started logger.')
+# </Logging>
+
+# <Argument Parser>
 parser = argparse.ArgumentParser(
     description='''Scraper for FanFiction.Net.''',
     epilog='''Copyright (c) 2018 Alexander L. Hayes. Distributed under the
@@ -56,6 +73,7 @@ parser.add_argument('-co', '--Cout', type=str, default='cytoscape.txt',
     help='Set output file for cytoscape network file.')
 parser.add_argument('-o', '--output', type=str, default='facts.txt',
     help='Set output file the information scraped.')
+# </Argument Parser>
 
 args = parser.parse_args()
 
@@ -102,16 +120,21 @@ elif args.file:
         counter += 1
 
         try:
+            logger.info('Started scraping sid: ' + sid)
             current_story = story.scraper(sid)
-        except:
+            logger.info('Finished scraping sid: ' + sid)
+        except Exception:
 
             # If errors are encountered, alert the user and dump the problematic sid.
+            logger.error('Problem while scraping fanfiction.net/s/' + sid, exc_info=True)
+            '''
             error_file = 'UNKNOWN.txt'
 
             print('\nEncountered an error while scraping {0}.'.format(sid))
             print('Adding sid to file: {0}'.format(error_file))
             with open(error_file, 'a') as f:
                 f.write(sid + '\n')
+            '''
             continue
 
         predicates = []

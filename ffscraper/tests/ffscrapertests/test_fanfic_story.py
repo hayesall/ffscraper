@@ -77,6 +77,30 @@ class CategoryAndFandomTest(unittest.TestCase):
 
         self.assertTrue(True)
 
+class NotEmptyFanficTest(unittest.TestCase):
+
+    def test_empty_fanfic_1(self):
+        # 1. Test when the fanfic is empty (a.k.a. contains the error code)
+        soup = bs(u"""<span class="gui_warning">Story Not Found
+                    <hr noshade="" size="1"/>Unable to locate story.
+                    Code 1.</span>""", 'html.parser')
+        self.assertFalse(story._not_empty_fanfic(soup))
+
+    def test_empty_fanfic_2(self):
+        # 2. Test when the fanfic is not empty.
+        soup = bs('', 'html.parser')
+        self.assertTrue(story._not_empty_fanfic(soup))
+
+    def test_empty_fanfic_3(self):
+        # 3. Test when the fanfic is not empty, but contains something...
+        soup = bs(u"""<div style='margin-bottom: 10px' class='lc-wrapper'
+        id=pre_story_links><span class=lc-left>
+        <a class=xcontrast_txt href='/anime/'>Anime/Manga</a>
+        <span class='xcontrast_txt icon-chevron-right xicon-section-arrow'>
+        </span><a class=xcontrast_txt href="/anime/Attack-on-Titan-%E9%80%B2%E6%92%83%E3%81%AE%E5%B7%A8%E4%BA%BA/">Attack on Titan/進撃の巨人</a>
+        </span></div>""", 'html.parser')
+        self.assertTrue(story._not_empty_fanfic(soup))
+
 class TitleTest(unittest.TestCase):
 
     def test_title_1(self):

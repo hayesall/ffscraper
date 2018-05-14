@@ -68,35 +68,22 @@ def _category_and_fandom(soup):
     c_f = soup.find('div', {'id': 'pre_story_links'}).find_all('a', href=True)
     return c_f[0].text, c_f[1].text
 
-def _title(soup):
+def _not_empty_fanfic(soup):
     """
     .. versionadded:: 0.3.0
 
-    Returns the fanfic's title from the soup.
+    Returns false if FanFiction.Net returns a 'Story Not Found' Exception
+    (Story Not Found: Unable to locate story. Code 1.)
 
     :param soup: Soup containing a page from FanFiction.Net
     :type soup: bs4.BeautifulSoup class
 
-    :returns: The title of the fanfic as a string.
-    :rtype: str.
-
-    .. code-block:: python
-
-                    from ffscraper.fanfic.story import _title
-                    from bs4 import BeautifulSoup as bs
-                    import requests
-
-                    r = requests.get('https://www.fanfiction.net/s/123')
-                    html = r.text
-                    soup = bs(html, 'html.parser')
-
-                    print(_title(soup))
-
-    .. code-block:: bash
-
-                    'There Once was a Man from Gilneas'
+    :returns: True if the story does not exist. False otherwise.
+    :rtype: bool
     """
-    return soup.find('b', {'class': 'xcontrast_txt'}).text
+
+    empty = soup.find('span', {'class': 'gui_warning'})
+    return not empty
 
 def _timestamps(soup):
     """
@@ -127,6 +114,36 @@ def _timestamps(soup):
         when_published = timestamps[1]['data-xutime']
 
     return when_published, when_updated
+
+def _title(soup):
+    """
+    .. versionadded:: 0.3.0
+
+    Returns the fanfic's title from the soup.
+
+    :param soup: Soup containing a page from FanFiction.Net
+    :type soup: bs4.BeautifulSoup class
+
+    :returns: The title of the fanfic as a string.
+    :rtype: str.
+
+    .. code-block:: python
+
+                    from ffscraper.fanfic.story import _title
+                    from bs4 import BeautifulSoup as bs
+                    import requests
+
+                    r = requests.get('https://www.fanfiction.net/s/123')
+                    html = r.text
+                    soup = bs(html, 'html.parser')
+
+                    print(_title(soup))
+
+    .. code-block:: bash
+
+                    'There Once was a Man from Gilneas'
+    """
+    return soup.find('b', {'class': 'xcontrast_txt'}).text
 
 def scraper(storyid, rate_limit=3):
     """
@@ -166,50 +183,54 @@ def scraper(storyid, rate_limit=3):
     html = r.text
     soup = bs(html, 'html.parser')
 
-    # Get the category and fandom information.
-    category, fandom = _category_and_fandom(soup)
+    # Check in case the fanfic does not exist
+    if not _not_empty_fanfic(soup):
+        raise(Exception('Fanfic is empty.'))
+    else:
+        # Get the category and fandom information.
+        category, fandom = _category_and_fandom(soup)
 
-    # Get the metadata describing properties of the story.
-    # This should contain the metadata line (e.g. rating, genre, words, etc.)
-    metadata_html = soup.find('span', {'class': 'xgray xcontrast_txt'})
-    metadata = metadata_html.text.replace('Sci-Fi', 'SciFi')
-    metadata = [s.strip() for s in metadata.split('-')]
+        # Get the metadata describing properties of the story.
+        # This should contain the metadata line (e.g. rating, genre, words, etc.)
+        metadata_html = soup.find('span', {'class': 'xgray xcontrast_txt'})
+        metadata = metadata_html.text.replace('Sci-Fi', 'SciFi')
+        metadata = [s.strip() for s in metadata.split('-')]
 
-    # Abstract and story are identified by <div class='xcontrast_txt'>...</div>
-    abstract_and_story = soup.find_all('div', {'class': 'xcontrast_txt'})
-    abstract = abstract_and_story[0].text
-    story_text = abstract_and_story[1].text
+        # Abstract and story are identified by <div class='xcontrast_txt'>...</div>
+        abstract_and_story = soup.find_all('div', {'class': 'xcontrast_txt'})
+        abstract = abstract_and_story[0].text
+        story_text = abstract_and_story[1].text
 
-    when_published, when_updated = _timestamps(soup)
+        when_published, when_updated = _timestamps(soup)
 
-    # There are several links on the page, the 2nd is a link to the author's
-    # page. Get the second link href tag (which will look something like '/u/1838183/thisname')
-    authorid = soup.find_all('a', {'class': 'xcontrast_txt'})[2].get('href').split('/')[2]
+        # There are several links on the page, the 2nd is a link to the author's
+        # page. Get the second link href tag (which will look something like '/u/1838183/thisname')
+        authorid = soup.find_all('a', {'class': 'xcontrast_txt'})[2].get('href').split('/')[2]
 
-    #print(metadata_html.find_all(attrs={'data-xutime': True}))
-    story = {
-        'sid': storyid,
-        'aid': authorid,
-        'category': category,
-        'fandom': fandom,
-        'title': _title(soup),
-        'published': when_published,
-        'updated': when_updated,
-        'rating': metadata[0],
-        'genre': metadata[2]
-        #'metadata': metadata,
-        #'abstract': abstract,
-        #'story_text': story_text
-    }
+        #print(metadata_html.find_all(attrs={'data-xutime': True}))
+        story = {
+            'sid': storyid,
+            'aid': authorid,
+            'category': category,
+            'fandom': fandom,
+            'title': _title(soup),
+            'published': when_published,
+            'updated': when_updated,
+            'rating': metadata[0],
+            'genre': metadata[2]
+            #'metadata': metadata,
+            #'abstract': abstract,
+            #'story_text': story_text
+        }
 
-    for m in metadata:
-        if 'Reviews' in m:
+        for m in metadata:
+            if 'Reviews' in m:
 
-            num_of_reviews = int(m.split()[1])
-            users = review.ReviewIDScraper(storyid, num_of_reviews)
-            story['Reviewers'] = users
+                num_of_reviews = int(m.split()[1].replace(',',''))
+                users = review.ReviewIDScraper(storyid, num_of_reviews)
+                story['Reviewers'] = users
 
-    #print(metadata)
+        #print(metadata)
 
-    #print(soup.prettify())
-    return story
+        #print(soup.prettify())
+        return story
