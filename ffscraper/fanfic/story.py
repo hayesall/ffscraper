@@ -30,6 +30,104 @@ from bs4 import BeautifulSoup as bs
 import requests
 import time
 
+def _category_and_fandom(soup):
+    """
+    .. versionadded:: 0.3.0
+
+    Returns the FanFiction category and fandom from the soup.
+
+    * Category is one of nine possible categories from ``['Anime/Manga', 'Books',
+      'Cartoons', 'Comics', 'Games', 'Misc', 'Movies', 'Plays/Musicals', 'TV']``
+    * Fandom is the specific sub-category, whereas category may be
+     ``Plays/Musicals``, the fandom could be ``RENT``, ``Wicked``, etc.
+
+    :param soup: Soup containing a page from FanFiction.Net
+    :type soup: bs4.BeautifulSoup class
+
+    :returns: Tuple where the first item is the category and the second item is
+              the fandom.
+    :rtype: tuple.
+
+    .. code-block:: python
+
+                    from ffscraper.fanfic.story import __category_and_fandom
+                    from bs4 import BeautifulSoup as bs
+                    import requests
+
+                    r = requests.get('https://www.fanfiction.net/s/123')
+                    html = r.text
+                    soup = bs(html, 'html.parser')
+
+                    print(_category_and_fandom(soup))
+
+    .. code-block:: bash
+
+                    ('Plays/Musicals', 'Wicked')
+    """
+
+    c_f = soup.find('div', {'id': 'pre_story_links'}).find_all('a', href=True)
+    return c_f[0].text, c_f[1].text
+
+def _title(soup):
+    """
+    .. versionadded:: 0.3.0
+
+    Returns the fanfic's title from the soup.
+
+    :param soup: Soup containing a page from FanFiction.Net
+    :type soup: bs4.BeautifulSoup class
+
+    :returns: The title of the fanfic as a string.
+    :rtype: str.
+
+    .. code-block:: python
+
+                    from ffscraper.fanfic.story import _title
+                    from bs4 import BeautifulSoup as bs
+                    import requests
+
+                    r = requests.get('https://www.fanfiction.net/s/123')
+                    html = r.text
+                    soup = bs(html, 'html.parser')
+
+                    print(_title(soup))
+
+    .. code-block:: bash
+
+                    'There Once was a Man from Gilneas'
+    """
+    return soup.find('b', {'class': 'xcontrast_txt'}).text
+
+def _timestamps(soup):
+    """
+    .. versionadded:: 0.3.0
+
+    'Publication' and 'last updated' are the two timestamps which are available.
+    If only one timestamp is listed, the story's update and publication time
+    should be the same.
+
+    :param soup: Soup containing a page from FanFiction.Net
+    :type soup: bs4.BeautifulSoup class
+
+    :returns: Tuple where the first item is the publication time and the second
+              item is the update time.
+    :rtype: tuple
+    """
+
+    metadata_html = soup.find('span', {'class': 'xgray xcontrast_txt'})
+
+    timestamps = metadata_html.find_all(attrs={'data-xutime': True})
+
+    # Logic for dealing with the possibility that only one timestamp exists.
+    if len(timestamps) == 1:
+        when_updated = timestamps[0]['data-xutime']
+        when_published = when_updated
+    else:
+        when_updated = timestamps[0]['data-xutime']
+        when_published = timestamps[1]['data-xutime']
+
+    return when_published, when_updated
+
 def scraper(storyid, rate_limit=3):
     """
     .. versionadded:: 0.1.0
@@ -46,11 +144,18 @@ def scraper(storyid, rate_limit=3):
 
     Example (*the output presented here has been altered*):
 
-    >>> from ffscraper.fanfic import story
-    >>> story123 = story.scraper('123')
-    >>> print(story123)
-    {'genre': 'Western', 'sid': '123', 'Reviewers': ['12', '24'],
-    'rating': 'Rated: Fiction  K', 'aid': "241"}
+    .. code-block:: python
+
+                    from ffscraper.fanfic import story
+
+                    # story.scraper is a handy interface for all of these.
+                    story123 = story.scraper('123')
+                    print(story123)
+
+    .. code-block:: bash
+
+                    {'genre': 'Western', 'sid': '123', 'Reviewers':
+                    ['12', '24'], 'rating': 'Rated: Fiction  K', 'aid': "241"}
     """
 
     # Rate limit
@@ -62,9 +167,7 @@ def scraper(storyid, rate_limit=3):
     soup = bs(html, 'html.parser')
 
     # Get the category and fandom information.
-    c_f = soup.find('div', {'id': 'pre_story_links'}).find_all('a', href=True)
-    category = c_f[0].text
-    fandom = c_f[1].text
+    category, fandom = _category_and_fandom(soup)
 
     # Get the metadata describing properties of the story.
     # This should contain the metadata line (e.g. rating, genre, words, etc.)
@@ -72,24 +175,12 @@ def scraper(storyid, rate_limit=3):
     metadata = metadata_html.text.replace('Sci-Fi', 'SciFi')
     metadata = [s.strip() for s in metadata.split('-')]
 
-    # Title from <b class='xcontrast_txt'>...</b>
-    title = soup.find('b', {'class': 'xcontrast_txt'}).text
-
     # Abstract and story are identified by <div class='xcontrast_txt'>...</div>
     abstract_and_story = soup.find_all('div', {'class': 'xcontrast_txt'})
     abstract = abstract_and_story[0].text
     story_text = abstract_and_story[1].text
 
-    # 'Publication' and 'last updated' are the two timestamps which are available.
-    # If only one timestamp is listed, the story's update and publication time
-    # should be the same.
-    timestamps = metadata_html.find_all(attrs={'data-xutime': True})
-    if len(timestamps) == 1:
-        when_updated = timestamps[0]['data-xutime']
-        when_published = when_updated
-    else:
-        when_updated = timestamps[0]['data-xutime']
-        when_published = timestamps[1]['data-xutime']
+    when_published, when_updated = _timestamps(soup)
 
     # There are several links on the page, the 2nd is a link to the author's
     # page. Get the second link href tag (which will look something like '/u/1838183/thisname')
@@ -99,11 +190,11 @@ def scraper(storyid, rate_limit=3):
     story = {
         'sid': storyid,
         'aid': authorid,
-        #'category': category,
-        #'fandom': fandom,
-        #'title': title,
-        #'published': when_published,
-        #'updated': when_updated,
+        'category': category,
+        'fandom': fandom,
+        'title': _title(soup),
+        'published': when_published,
+        'updated': when_updated,
         'rating': metadata[0],
         'genre': metadata[2]
         #'metadata': metadata,
@@ -122,8 +213,3 @@ def scraper(storyid, rate_limit=3):
 
     #print(soup.prettify())
     return story
-
-if __name__ == '__main__':
-
-    raise(Exception('No main class in story.py'))
-    exit(1)

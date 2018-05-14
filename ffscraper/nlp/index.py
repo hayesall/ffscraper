@@ -110,6 +110,8 @@ story, profile, or a story review.
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from collections import Counter
+
 from nltk import word_tokenize
 from nltk import sent_tokenize
 from nltk.corpus import stopwords
@@ -194,17 +196,96 @@ def ngram(list_of_words, n=2):
     """
     pass
 
-def __count_and_log(input):
-    pass
-
-def invert():
-    pass
-
-def normalize(string, language='english'):
+def wordcount(document):
     """
     .. versionadded:: 0.3.0
 
-    Create an inverted index from the input.
+    Count the number of times a word appears in a document. Returning a bag-of-
+    words for the document.
+
+    :param document: A generator or list of lists of strings representing the
+                     sentences and words contained in a document.
+    :type document: generator OR list-of-lists
+
+    :returns: A Counter object (default dictionary: ``collections.Counter``)
+              which maps each token to the number of times that it appeared in
+              the document).
+    :rtype: Counter
+
+    This function can be used in two ways:
+      1. ``document`` as a generator
+      2. ``document`` as a list of lists, where each list represents a sentence
+         and each sentence contains a list of string tokens.
+
+    .. code-block:: python
+
+                    from ffscraper.nlp.index import normalize
+                    from ffscraper.nlp.index import wordcount
+
+                    doc = normalize('''O Captain! my Captain! our fearful trip
+                    is done, The ship has weather'd every rack, the prize we
+                    sought is won, The port is near, the bells I hear, the
+                    people all exulting, While follow eyes the steady keel,
+                    the vessel grim and daring; But O heart! heart! heart!
+                    O the bleeding drops of red, Where on the deck my Captain
+                    lies, Fallen cold and dead.''', language='english')
+
+                    bag_of_words = wordcount(doc)
+                    print(bag_of_words)
+
+    .. code-block:: bash
+
+                    Counter({'captain': 3, 'heart': 3, 'fear': 1, 'trip': 1,
+                    'done': 1, 'ship': 1, 'weather': 1, 'everi': 1, 'rack': 1,
+                    'prize': 1, 'sought': 1, 'port': 1, 'near': 1, 'bell': 1,
+                    'hear': 1, 'peopl': 1, 'exult': 1, 'follow': 1, 'eye': 1,
+                    'steadi': 1, 'keel': 1, 'vessel': 1, 'grim': 1, 'dare': 1,
+                    'bleed': 1, 'drop': 1, 'red': 1, 'deck': 1, 'lie': 1,
+                    'fallen': 1, 'cold': 1, 'dead': 1})
+    """
+
+    counts = Counter()
+
+    for sentence in document:
+        for word in sentence:
+
+            # This catches those pesky empty strings where a punctuation mark
+            # used to be.
+            if not word:
+                continue
+            else:
+                counts[word] += 1
+
+    return counts
+
+def invert(document, document_id):
+    """
+    .. versionadded:: 0.3.0
+
+    Create an inverted index: where the key is the word, and each key maps to
+    another dictionary containing the ``document_id`` and the number of times
+    that the word appeared in the document.
+
+    :param document: A generator or list of lists of strings representing the
+                     sentences and words contained in a document.
+    :type document: generator OR list-of-lists
+
+    :returns: A dictionary of dictionaries.
+    :rtype: dict.
+    """
+
+    bag_of_words = wordcount(document)
+
+    inverted_index = {}
+    for key in bag_of_words.keys():
+        inverted_index[key] = {document_id: bag_of_words[key]}
+
+    return inverted_index
+
+def normalize(string, stop=True, stem=True,
+              removepunctuation=True, lowercase=True, language='english'):
+    """
+    .. versionadded:: 0.3.0
 
     :param string: A string, potentially with punctuation and newlines.
     :type string: str.
@@ -215,6 +296,28 @@ def normalize(string, language='english'):
               each list consists of strings of lowercase words which have been
               stopped and stemmed.
     :rtype: generator
+
+    Normalize a string of text, performing some combination of the following:
+      * Remove Stopwords (``stop=True``)
+      * Stem words with a Porter Stemmer (``stem=True``)
+      * Remove punctuation (``removepunctuation=True``)
+      * Convert to lowercase (``lowercase=True``)
+      * Perform these actions based on a target language (``language='english'``)
+
+    .. warning:: Keywords arguments exist for each of these, but the logical
+                 implementation does not exist yet. Defaults are used with
+                 the exception of language, which may be varied.
+
+    Additional features which may be useful for adding later:
+      * Negation:
+
+        - Slides: https://web.stanford.edu/class/cs124/lec/sentiment.pdf
+        - "Add NOT\_ to every word between negation and following punctuation:"
+        - For example:
+
+            "didn't like this movie , but I"
+
+            "didn't NOT\_like NOT\_this NOT\_movie , but I"
 
     Order of operations:
 
