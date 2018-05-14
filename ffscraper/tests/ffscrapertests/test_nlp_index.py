@@ -17,6 +17,8 @@
 
 from __future__ import print_function
 
+from collections import Counter
+
 import sys
 import unittest
 
@@ -79,3 +81,48 @@ class IndexTest(unittest.TestCase):
         u'', u'plumerai', u''], [u'plumerai', u'tête', u'']]
 
         self.assertEqual(sentences, expected)
+
+class WordcountTest(unittest.TestCase):
+
+    def test_wordcount_1(self):
+        # 1. The example supplied in the documentation.
+
+        doc = index.normalize(u'''O Captain! my Captain! our fearful trip
+                is done, The ship has weather'd every rack, the prize we
+                sought is won, The port is near, the bells I hear, the
+                people all exulting, While follow eyes the steady keel,
+                the vessel grim and daring; But O heart! heart! heart!
+                O the bleeding drops of red, Where on the deck my Captain
+                lies, Fallen cold and dead.''', language='english')
+
+        expected = Counter({'captain': 3, 'heart': 3, 'fear': 1, 'trip': 1,
+                'done': 1, 'ship': 1, 'weather': 1, 'everi': 1, 'rack': 1,
+                'prize': 1, 'sought': 1, 'port': 1, 'near': 1, 'bell': 1,
+                'hear': 1, 'peopl': 1, 'exult': 1, 'follow': 1, 'eye': 1,
+                'steadi': 1, 'keel': 1, 'vessel': 1, 'grim': 1, 'dare': 1,
+                'bleed': 1, 'drop': 1, 'red': 1, 'deck': 1, 'lie': 1,
+                'fallen': 1, 'cold': 1, 'dead': 1})
+
+        self.assertEqual(index.wordcount(doc), expected)
+
+    def test_wordcount_2(self):
+        # 2. A short example where we can easily count the words.
+
+        doc = index.normalize(u'Hello hello hello world goodbye')
+        expected = Counter({'hello': 3, 'world': 1, 'goodby': 1})
+        self.assertEqual(index.wordcount(doc), expected)
+
+    def test_wordcount_3(self):
+        # 3. Possibly strange input: where we normalize an empty string.
+
+        doc = index.normalize('')
+        expected = Counter({})
+        self.assertEqual(index.wordcount(doc), expected)
+
+    def test_wordcount_4(self):
+        # 4. Examples so far have used the index.normalize function, this
+        #    test uses lists of lists of strings.
+
+        doc = [['a', 'b', 'c'], ['a', 'b', 'd'], ['a', 'a', 'a']]
+        expected = Counter({'a': 5, 'b': 2, 'c': 1, 'd': 1})
+        self.assertEqual(index.wordcount(doc), expected)
