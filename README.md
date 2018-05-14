@@ -1,6 +1,6 @@
 # Collaborative Filtering in FanFiction Networks
 
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ffscraper.svg?style=flat-square) ![PyPI](https://img.shields.io/pypi/v/ffscraper.svg?style=flat-square) ![license](https://img.shields.io/pypi/l/ffscraper.svg?style=flat-square) [![Read the Docs (version)](https://img.shields.io/readthedocs/fanfiction-collaborative-filtering/stable.svg?style=flat-square)](http://fanfiction-collaborative-filtering.readthedocs.io/en/latest/)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/ffscraper.svg?style=flat-square) ![PyPI](https://img.shields.io/pypi/v/ffscraper.svg?style=flat-square) ![license](https://img.shields.io/pypi/l/ffscraper.svg?style=flat-square) [![codecov](https://codecov.io/gh/batflyer/FanFiction-Collaborative-Filtering/branch/master/graph/badge.svg?token=psUEAhqaGl)](https://codecov.io/gh/batflyer/FanFiction-Collaborative-Filtering) [![Read the Docs (version)](https://img.shields.io/readthedocs/fanfiction-collaborative-filtering/stable.svg?style=flat-square)](http://fanfiction-collaborative-filtering.readthedocs.io/en/latest/)
 
 *Yet another set of scraping tools for FanFiction.Net*
 
