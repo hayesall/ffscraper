@@ -201,9 +201,11 @@ elif args.file:
                 f.write(p + '\n')
 
     logger.info('====== Starting Phase II ======')
-    logger.info('Encountered ' + str(len(fandoms)) + 'fandom during Phase I.')
+    logger.info('Encountered ' + str(len(fandoms)) +
+                ' fandom(s) during Phase I.')
     logger.info('Fandoms encountered: ' + str(fandoms))
-    logger.info('Encountered ' + str(len(people)) + 'users during Phase I.')
+    logger.info('Encountered ' + str(len(people)) +
+                ' user(s) during Phase I.')
     # Phase II: User Profiles from the set of users observed during Phase I.
     # Initialize the number_of_sids to avoid recalculation and a counter from 0
     number_of_uids = len(people)
