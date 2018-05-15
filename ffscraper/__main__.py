@@ -70,6 +70,7 @@ mode.add_argument('-s', '--sid', type=str,
     help='Scrape a single story.')
 mode.add_argument('-f', '--file', type=str,
     help='Scrape all sids contained in a file.')
+
 parser.add_argument('-V', '--version', action='store_true',
     help='Print the version number, then exit.')
 parser.add_argument('-v', '--verbose', action='store_true',
@@ -121,10 +122,14 @@ elif args.file:
     number_of_sids = len(sids)
     counter = 0
 
-    # Initialize a set of people.
+    # Initialize a set of people, a set of fandoms, and copy the stories.
     people = set()
+    fandoms = set()
+    stories = copy.copy(sids)
 
     # Phase I: Scrape stories.
+    logger.info('====== Starting Phase I ======')
+    logger.info('Beginning loop with ' + str(number_of_sids) + ' stories.')
     while sids:
 
         # Increment our counter.
@@ -149,6 +154,8 @@ elif args.file:
 
         # Add the author of the current story to the set of people.
         people.add(current_story['aid'])
+        # Add the current fandom to the set of fandoms.
+        fandoms.add(current_story['fandom'])
 
         # Initialize predicates for BoostSRL and schema for Cytoscape.
         predicates = []
@@ -193,10 +200,17 @@ elif args.file:
             for p in schema:
                 f.write(p + '\n')
 
+    logger.info('====== Starting Phase II ======')
+    logger.info('Encountered ' + str(len(fandoms)) + 'fandom during Phase I.')
+    logger.info('Fandoms encountered: ' + str(fandoms))
+    logger.info('Encountered ' + str(len(people)) + 'users during Phase I.')
     # Phase II: User Profiles from the set of users observed during Phase I.
     # Initialize the number_of_sids to avoid recalculation and a counter from 0
     number_of_uids = len(people)
     counter = 0
+
+    # Create a copy of people. The original one will be mutated.
+    authors_and_reviewers = copy.copy(people)
     while people:
 
         # Increment our counter.
@@ -209,14 +223,42 @@ elif args.file:
         Utils.progress(counter, number_of_uids,
                        status='Scraping: {0}...'.format(uid))
 
-        # Do some printing.
-        #relative_score = UserProfile(uid, 'Atlas Shrugged')
-        favorite_stories, inverted_favorites = profile.scraper(uid,
-                                                               rate_limit=1)
-        relative_score = profile._relative_likes(favorite_stories,
-                                                 inverted_favorites,
-                                                 "Hitchhiker\\'s Guide to the Galaxy")
-        print(uid, "Hitchhiker\\'s Guide to the Galaxy", relative_score)
+        # Try scraping the profile, log if/where the scraper throws errors.
+        try:
+            logger.info('Started scraping uid: ' + uid)
+            fav_stories, inverted_favs = profile.scraper(uid, rate_limit=1)
+            logger.info('Finished scraping uid: ' + uid)
+        except Exception:
+            # If errors occur, log the exception and continue.
+            logger.error('fanfiction.net/u/' + uid, exc_info=True)
+            continue
+
+        # Initialize predicates for BoostSRL and schema for Cytoscape.
+        predicates = []
+        schema = []
+
+        # Estimate how much the user likes each fandom scraped from.
+        for fandom in fandoms:
+            relative_score = profile._relative_likes(fav_stories,
+                                                     inverted_favs, fandom)
+
+            logger.info('user/fandom: ' + uid + '/' + fandom + ': ' +
+                        str(relative_score))
+
+            if fandom in inverted_favs:
+                for sid in inverted_favs[fandom]:
+                    if sid in stories:
+                        predicates.append(
+                            Utils.PredicateLogicBuilder('liked', uid, sid))
+                        schema.append(
+                            schemaString('user' + uid, 'liked', 'story' + sid))
+
+        with open(args.output, 'a') as f:
+            for p in predicates:
+                f.write(p + '\n')
+        with open(args.Cout, 'a') as f:
+            for p in schema:
+                f.write(p + '\n')
 
 # Shut down the logger and exit with no errors.
 logger.info('Reached bottom of file, shutting down logger.')
