@@ -20,6 +20,63 @@ from bs4 import BeautifulSoup as bs
 import requests
 import time
 
+def _favorite_stories(soup):
+    """
+    .. versionadded:: 0.3.0
+
+    Find the favorite stories and return them as a list.
+
+    :param soup: Soup containing a page from FanFiction.Net
+    :type soup: bs4.BeautifulSoup class
+
+    :returns: story-ids liked by the user.
+    :rtype: list
+    """
+
+    # "Favorite Stories" are stored in a z-list favstories.
+    favorite_stories = soup.find_all('div', {'class': 'z-list favstories'})
+
+    # Favorites as a list of tuples
+    favs = []
+    for story in favorite_stories:
+        favs.append(tuple([_metadata_storyid(story), _metadata_fandom(story)]))
+
+    # Favorites as an index mapping the fandom to the stories which are
+    # part of the fandom.
+    # e.g. favorites_inverted['Pride and Prejudice'] == ['124', '125', '127']
+    favorites_inverted = {}
+    for storyid, fandom in favs:
+        if fandom in favorites_inverted:
+            favorites_inverted[fandom].append(storyid)
+        else:
+            favorites_inverted[fandom] = [storyid]
+
+    return favs, favorites_inverted
+
+def _metadata_storyid(soup_tag):
+    """
+    .. versionadded:: 0.3.0
+
+    Parses the story metadata for stories shown on a user's profile, returning
+    the storyid.
+
+    :param soup_tag: Tag containing <div class="z-list favstories" ...>
+    :type soup_tag: bs4.element.Tag class
+    """
+    return soup_tag['data-storyid']
+
+def _metadata_fandom(soup_tag):
+    """
+    .. versionadded:: 0.3.0
+
+    Parses the story metadata for stories shown on a user's profile, returning
+    the fandom.
+
+    :param soup_tag: Tag containing <div class="z-list favstories" ...>
+    :type soup_tag: bs4.element.Tag class
+    """
+    return soup_tag['data-category']
+
 def scraper(uid, rate_limit=3):
     """
     Scrapes the data from a user's profile on FanFiction.Net.
@@ -57,10 +114,13 @@ def scraper(uid, rate_limit=3):
     html = r.text
     soup = bs(html, 'html.parser')
 
-    # "Favorite Stories" are stored in a z-list favstories
-    favorite_stories = soup.find_all('div', {'class': 'z-list favstories'})
+    #favorite_stories = soup.find_all('div', {'class': 'z-list favstories'})
+    favorite_stories, inverted_favorites = _favorite_stories(soup)
 
-    print(favorite_stories[0])
+    for fandom in inverted_favorites.keys():
+        print(fandom, len(inverted_favorites[fandom]))
+
+    #print(favorite_stories[0])
     print(len(favorite_stories))
 
 
