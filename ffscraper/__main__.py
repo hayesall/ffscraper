@@ -124,17 +124,8 @@ elif args.file:
             current_story = story.scraper(sid)
             logger.info('Finished scraping sid: ' + sid)
         except Exception:
-
-            # If errors are encountered, alert the user and dump the problematic sid.
+            # If errors are encountered, log an exception.
             logger.error('Problem while scraping fanfiction.net/s/' + sid, exc_info=True)
-            '''
-            error_file = 'UNKNOWN.txt'
-
-            print('\nEncountered an error while scraping {0}.'.format(sid))
-            print('Adding sid to file: {0}'.format(error_file))
-            with open(error_file, 'a') as f:
-                f.write(sid + '\n')
-            '''
             continue
 
         predicates = []
@@ -164,3 +155,7 @@ elif args.file:
         with open(args.Cout, 'a') as f:
             for p in schema:
                 f.write(p + '\n')
+
+# Shut down the logger and exit with no errors.
+logging.shutdown()
+exit(0)
