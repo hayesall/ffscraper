@@ -227,7 +227,7 @@ def scraper(storyid, rate_limit=3):
             if 'Reviews' in m:
 
                 num_of_reviews = int(m.split()[1].replace(',',''))
-                users = review.ReviewIDScraper(storyid, num_of_reviews)
+                users = review.ReviewIDScraper(storyid, num_of_reviews, rate_limit=rate_limit)
                 story['Reviewers'] = users
 
         #print(metadata)

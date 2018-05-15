@@ -14,6 +14,7 @@
 #   limitations under the License.
 
 from __future__ import print_function
+from __future__ import division
 
 from bs4 import BeautifulSoup as bs
 
@@ -77,6 +78,47 @@ def _metadata_fandom(soup_tag):
     """
     return soup_tag['data-category']
 
+def _relative_likes(favorite_stories, inverted_favorites, fandom):
+    """
+    .. versionadded:: 0.3.0
+
+    Returns how many stories a user likes in a fandom over all fandoms
+    that they like.
+
+    :param favorite_stories: List of story-ids liked by a user.
+    :type favorite_stories: list.
+    :param inverted_favorites: Dictionary mapping fandoms to the story-ids in
+                               that fandom liked by a user.
+    :type inverted_favorites: dict.
+    :param fandom: String representing the fandom.
+    :type fandom: str.
+
+    :returns: Approximate calculation for how much a user likes a fandom.
+    :rtype: float
+
+    .. note:: This is far from a perfect calculation. This should really take
+              a few more metrics into account, such as the number of stories
+              a person has written for a particular fandom, the sentiment of
+              the reviews they left over all stories they reviewed for a
+              fandom, etc.
+    """
+
+    # Calculate roughly how much this person likes this fandom.
+    number_of_favorites = len(favorite_stories)
+
+    # If the user likes no fanfics
+    if not number_of_favorites:
+        return 0.0
+
+    # If they like at least one story from the fandom, get the number.
+    if inverted_favorites.get(fandom):
+        favorites_for_fandom = len(inverted_favorites[fandom])
+    else:
+        return 0.0
+
+    # If they like at least one fanfic and one from this fandom, return score.
+    return favorites_for_fandom / number_of_favorites
+
 def scraper(uid, rate_limit=3):
     """
     Scrapes the data from a user's profile on FanFiction.Net.
@@ -114,17 +156,6 @@ def scraper(uid, rate_limit=3):
     html = r.text
     soup = bs(html, 'html.parser')
 
-    #favorite_stories = soup.find_all('div', {'class': 'z-list favstories'})
-    favorite_stories, inverted_favorites = _favorite_stories(soup)
-
-    for fandom in inverted_favorites.keys():
-        print(fandom, len(inverted_favorites[fandom]))
-
-    #print(favorite_stories[0])
-    print(len(favorite_stories))
-
-
-if __name__ == '__main__':
-    # This behavior is for testing, will likely be deprecated or changed later.
-
-    exit(0)
+    #soup.find_all('div', {'class': 'z-list favstories'})
+    #Returns a tuple of (favorite_stories, inverted_favorites)
+    return _favorite_stories(soup)

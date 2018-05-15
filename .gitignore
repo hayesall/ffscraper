@@ -106,3 +106,4 @@ ENV/
 .mypy_cache/
 facts.txt
 cytoscape.txt
+sids.txt

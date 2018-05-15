@@ -13,7 +13,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-
 from __future__ import print_function
 
 from bs4 import BeautifulSoup as bs
@@ -25,6 +24,8 @@ sys.path.append('./')
 from ffscraper.author import profile
 
 class FavoriteStoriesTest(unittest.TestCase):
+
+    # ffscraper.fanfic.author._favorite_stories
 
     def test_favorites_stories_1(self):
         # Three stories from same fandom.
@@ -77,3 +78,79 @@ class FavoriteStoriesTest(unittest.TestCase):
                                     ('121', 'Pride and Prejudice')])
         self.assertEqual(fav_inverted, {'Twilight': ['500'],
                                         'Pride and Prejudice': ['121']})
+
+class TestRelativeLikes(unittest.TestCase):
+
+    # ffscraper.fanfic.author._relative_likes
+
+    def test_relative_likes_1(self):
+        # 1. Test using profile._favorite_stories to create the list and dict.
+        soup = bs("""<div class='z-list favstories'
+                data-category="Pride and Prejudice"  data-storyid="120"</div>
+
+                <div class='z-list favstories'
+                data-category="Pride and Prejudice"  data-storyid="121"</div>
+
+                <div class='z-list favstories'
+                data-category="Pride and Prejudice"  data-storyid="122"</div>
+                """, 'html.parser')
+
+        fav_list, fav_inverted = profile._favorite_stories(soup)
+
+        relative_likes = profile._relative_likes(fav_list, fav_inverted,
+                                                 'Pride and Prejudice')
+        self.assertEqual(1.0, relative_likes)
+
+    def test_relative_likes_2(self):
+        # 2. Test using profile._favorite_stories with no likes.
+        soup = bs('', 'html.parser')
+
+        fav_list, fav_inverted = profile._favorite_stories(soup)
+        relative_likes = profile._relative_likes(fav_list, fav_inverted,
+                                                 'Pride and Prejudice')
+        self.assertEqual(0.0, relative_likes)
+
+    def test_relative_likes_3(self):
+        # 3. Test using profile._favorite_stories with mix of fandom.
+        soup = bs("""<div class='z-list favstories'
+                data-category="Twilight"  data-storyid="500"</div>
+
+                <div class='z-list favstories'
+                data-category="Pride and Prejudice"  data-storyid="121"</div>
+                """, 'html.parser')
+
+        fav_list, fav_inverted = profile._favorite_stories(soup)
+
+        relative_likes = profile._relative_likes(fav_list, fav_inverted,
+                                                 'Pride and Prejudice')
+        self.assertEqual(0.5, relative_likes)
+
+    def test_relative_likes_4(self):
+        # 4. Same test as test_relative_likes_3, but with 'Twilight'
+        soup = bs("""<div class='z-list favstories'
+                data-category="Twilight"  data-storyid="500"</div>
+
+                <div class='z-list favstories'
+                data-category="Pride and Prejudice"  data-storyid="121"</div>
+                """, 'html.parser')
+
+        fav_list, fav_inverted = profile._favorite_stories(soup)
+
+        relative_likes = profile._relative_likes(fav_list, fav_inverted,
+                                                 'Twilight')
+        self.assertEqual(0.5, relative_likes)
+
+    def test_relative_likes_5(self):
+        # 5. Test when querying for a fandom that the user has not liked.
+        soup = bs("""<div class='z-list favstories'
+                data-category="Pride and Prejudice"  data-storyid="120"</div>
+
+                <div class='z-list favstories'
+                data-category="Pride and Prejudice"  data-storyid="122"</div>
+                """, 'html.parser')
+
+        fav_list, fav_inverted = profile._favorite_stories(soup)
+
+        relative_likes = profile._relative_likes(fav_list, fav_inverted,
+                                                 'Twilight')
+        self.assertEqual(0.0, relative_likes)

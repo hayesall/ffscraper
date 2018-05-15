@@ -30,6 +30,7 @@ else:
 
 from .fanfic import story
 from .fanfic import review
+from .author import profile
 from . import Utils
 
 # <Metadata>
@@ -69,9 +70,6 @@ mode.add_argument('-s', '--sid', type=str,
     help='Scrape a single story.')
 mode.add_argument('-f', '--file', type=str,
     help='Scrape all sids contained in a file.')
-mode.add_argument('-r', '--review', type=str,
-    help='Scrape the reviews for a particular story.')
-
 parser.add_argument('-V', '--version', action='store_true',
     help='Print the version number, then exit.')
 parser.add_argument('-v', '--verbose', action='store_true',
@@ -113,15 +111,6 @@ if args.sid:
     for p in predicates:
         print(p)
 
-elif args.review:
-    # !!! In progress
-
-    raise(Exception('Review has some bugs, it needs the story metadata.'))
-    exit(1)
-
-    ReviewScraper(args.review, 16)
-    exit()
-
 elif args.file:
     # Import the sids from the file and scrape each of them.
 
@@ -135,7 +124,11 @@ elif args.file:
     # Initialize a set of people.
     people = set()
 
+    # Phase I: Scrape stories.
     while sids:
+
+        # Increment our counter.
+        counter += 1
 
         # Pop the current sid off the stack
         sid = sids.pop()
@@ -200,8 +193,30 @@ elif args.file:
             for p in schema:
                 f.write(p + '\n')
 
-        # increment our counter
+    # Phase II: User Profiles from the set of users observed during Phase I.
+    # Initialize the number_of_sids to avoid recalculation and a counter from 0
+    number_of_uids = len(people)
+    counter = 0
+    while people:
+
+        # Increment our counter.
         counter += 1
+
+        # Pop the current person from the set of people.
+        uid = people.pop()
+
+        # Helpful progress bar
+        Utils.progress(counter, number_of_uids,
+                       status='Scraping: {0}...'.format(uid))
+
+        # Do some printing.
+        #relative_score = UserProfile(uid, 'Atlas Shrugged')
+        favorite_stories, inverted_favorites = profile.scraper(uid,
+                                                               rate_limit=1)
+        relative_score = profile._relative_likes(favorite_stories,
+                                                 inverted_favorites,
+                                                 "Hitchhiker\\'s Guide to the Galaxy")
+        print(uid, "Hitchhiker\\'s Guide to the Galaxy", relative_score)
 
 # Shut down the logger and exit with no errors.
 logger.info('Reached bottom of file, shutting down logger.')
