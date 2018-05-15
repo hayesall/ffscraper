@@ -16,9 +16,17 @@
 from __future__ import print_function
 from __future__ import division
 
+# Python Standard Library Modules
 import argparse
 import copy
 import logging
+import sys
+
+# Python 2/3 Compatability for Pickling.
+if sys.version_info < (3,0,0):
+    import cPickle as pickle
+else:
+    import pickle
 
 from .fanfic import story
 from .fanfic import review
@@ -77,6 +85,12 @@ parser.add_argument('-o', '--output', type=str, default='facts.txt',
 
 args = parser.parse_args()
 
+def schemaString(a1, a2, a3):
+    """
+    Return the the arguments as a string for use in Cytoscape.
+    """
+    return a1 + ' ' + a2 + ' ' + a3
+
 if args.version:
     print(__version__)
     exit(0)
@@ -85,11 +99,17 @@ if args.sid:
     # Scrape the contents of a single file from FanFiction.Net
     current_story = story.scraper(args.sid)
 
+    # Create predicates for BoostSRL.
     predicates = []
-    predicates.append(Utils.PredicateLogicBuilder('author', current_story['aid'], current_story['sid']))
-    predicates.append(Utils.PredicateLogicBuilder('rating', current_story['sid'], current_story['rating']))
-    predicates.append(Utils.PredicateLogicBuilder('genre', current_story['sid'], current_story['genre']))
-
+    predicates.append(Utils.PredicateLogicBuilder('author',
+                                                  current_story['aid'],
+                                                  current_story['sid']))
+    predicates.append(Utils.PredicateLogicBuilder('rating',
+                                                  current_story['sid'],
+                                                  current_story['rating']))
+    predicates.append(Utils.PredicateLogicBuilder('genre',
+                                                  current_story['sid'],
+                                                  current_story['genre']))
     for p in predicates:
         print(p)
 
@@ -105,57 +125,85 @@ elif args.review:
 elif args.file:
     # Import the sids from the file and scrape each of them.
 
+    # Initialize the sids as a stack
     sids = Utils.ImportStoryIDs(args.file)
-    # Initialize a remaining_sids list as a copy of sids
-    remaining_sids = copy.copy(sids)
 
-    # Values for the progress bar.
+    # Initialize the number_of_sids to avoid recalculation and a counter from 0
     number_of_sids = len(sids)
     counter = 0
 
-    for sid in sids:
+    # Initialize a set of people.
+    people = set()
+
+    while sids:
+
+        # Pop the current sid off the stack
+        sid = sids.pop()
 
         # Helpful progress bar
-        Utils.progress(counter, number_of_sids, status='Currently on: {0}...'.format(sid))
-        counter += 1
+        Utils.progress(counter, number_of_sids,
+                       status='Scraping: {0}...'.format(sid))
 
+        # Try scraping the story. If it fails, log and move on.
         try:
             logger.info('Started scraping sid: ' + sid)
-            current_story = story.scraper(sid)
+            current_story = story.scraper(sid, rate_limit=1)
             logger.info('Finished scraping sid: ' + sid)
         except Exception:
-            # If errors are encountered, log an exception.
-            logger.error('Problem while scraping fanfiction.net/s/' + sid, exc_info=True)
+            # If errors occur, log the exception.
+            logger.error('fanfiction.net/s/' + sid, exc_info=True)
             continue
 
+        # Add the author of the current story to the set of people.
+        people.add(current_story['aid'])
+
+        # Initialize predicates for BoostSRL and schema for Cytoscape.
         predicates = []
-        # schema will be used with cytoscape
         schema = []
 
-        schema.append('user' + current_story['aid'] + ' wrote story' + current_story['sid'])
+        # Create a schema list for Cytoscape.
+        schema.append(schemaString('user' + current_story['aid'],
+                                   'wrote',
+                                   'story' + current_story['sid']))
 
-        predicates.append(Utils.PredicateLogicBuilder('author', current_story['aid'], current_story['sid']))
-        predicates.append(Utils.PredicateLogicBuilder('rating', current_story['sid'], current_story['rating']))
-        predicates.append(Utils.PredicateLogicBuilder('genre', current_story['sid'], current_story['genre']))
+        # Create predicates for BoostSRL.
+        predicates.append(Utils.PredicateLogicBuilder('author',
+                                                      current_story['aid'],
+                                                      current_story['sid']))
+        predicates.append(Utils.PredicateLogicBuilder('rating',
+                                                      current_story['sid'],
+                                                      current_story['rating']))
+        predicates.append(Utils.PredicateLogicBuilder('genre',
+                                                      current_story['sid'],
+                                                      current_story['genre']))
 
         if current_story.get('Reviewers'):
-            reviewers = current_story['Reviewers']
 
-            for reviewer in reviewers:
-                predicates.append(Utils.PredicateLogicBuilder('reviewed', reviewer, current_story['sid']))
-                schema.append('user' + reviewer + ' reviewed story' + current_story['sid'])
+            # Add reviewers to the set of people.
+            people = people.union(set(current_story['Reviewers']))
 
-        # Remove the current sid from the list of remaining_sids
-        remaining_sids.remove(sid)
+            # Create associated predicates and Cytoscape schemas.
+            for reviewer in current_story['Reviewers']:
+                predicates.append(
+                    Utils.PredicateLogicBuilder('reviewed',
+                                                reviewer,
+                                                current_story['sid'])
+                    )
+                schema.append(schemaString('user' + reviewer,
+                                           'reviewed',
+                                           'story' + current_story['sid']))
 
         with open(args.output, 'a') as f:
             for p in predicates:
                 f.write(p + '\n')
-
         with open(args.Cout, 'a') as f:
             for p in schema:
                 f.write(p + '\n')
 
+        # increment our counter
+        counter += 1
+
 # Shut down the logger and exit with no errors.
+logger.info('Reached bottom of file, shutting down logger.')
 logging.shutdown()
 exit(0)
