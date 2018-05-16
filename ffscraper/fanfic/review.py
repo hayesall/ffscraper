@@ -90,7 +90,6 @@ def ReviewIDScraper(storyid, reviews_num, rate_limit=3):
 
     return list(set(user_id_list))
 
-
 def ReviewScraper(storyid, reviews_num, rate_limit=3):
     """
     Scrapes the reviews for a certain story.
@@ -144,3 +143,114 @@ def ReviewScraper(storyid, reviews_num, rate_limit=3):
                 if '/u/' in str(link):
                     # This is a way to get the user id.
                     print(str(link).split('"')[1].split('/')[2])
+
+def _review_chapter_and_timestamp(soup_tag):
+    """
+    .. versionadded:: 0.3.0
+
+    Returns the chapter that a review corresponds to and the timestamp
+    when the review was left.
+
+    :returns: Tuple where the first item is the chapter being reviewed and
+              the second item is the timestamp when the review was left.
+    :rtype: tuple
+    """
+
+    # Chapter and timestamp are listed under a <small> tag.
+    small_tag = soup_tag.find('small')
+
+    # Remove the space from the end and 'chapter ' from beginning.
+    chapter = small_tag.text.split('.')[0][:-1].strip('chapter ')
+    # Timestamp is the second item in the small_tag
+    time_stamp = small_tag.find(attrs={'data-xutime': True})['data-xutime']
+
+    return chapter, time_stamp
+
+def _review_text(soup_tag):
+    """
+    .. versionadded:: 0.3.0
+
+    Returns the text in a review entry.
+    """
+    return soup_tag.find('div', style='margin-top:5px').text
+
+def _review_user(soup_tag):
+    """
+    .. versionadded:: 0.3.0.
+
+    Returns the user id of the user who left the review. If the review was
+    submitted anonymously, there will not be a link to the user who left it.
+    """
+
+    # Several links are listed under each review, only some are of interest.
+    links = soup_tag.find_all('a', href=True)
+
+    for link in links:
+        if '/u/' in str(link):
+            # Return the user id:
+            return str(link).split('"')[1].split('/')[2]
+
+    # If we did not reach a return during the for loop, this is a Guest review.
+    # Guests are usually named "Guest" but occasionally they have a name
+    # associated with them still.
+    return 'Guest'
+
+def _reviews_in_table(soup):
+    """
+    .. versionadded:: 0.3.0
+
+    Finds all reviews in the review table in the soup.
+
+    :param soup: Soup containing a page from FanFiction.Net
+    :type soup: bs4.BeautifulSoup class
+
+    :returns: A generator for 4-tuples, where items in the tuple correspond
+              to (reviewer, chapter, timestamp, review_text).
+
+              1. reviewer: Who left the review (user-id or 'Guest')
+              2. chapter: Chapter the review was left for.
+              3. timestamp: When the review was left.
+              4. review_text: Content of the review.
+    """
+
+    # Get the tbody, which is where the review table is stored.
+    tbody = soup.find('tbody')
+
+    # Loop over the table entries (td)
+    for review in tbody.find_all('td'):
+
+        # Get the timestamp and the chapter being reviewed
+        chapter, timestamp = _review_chapter_and_timestamp(review)
+
+        # Get the user who left the review (or anonymous).
+        reviewer = _review_user(review)
+
+        # Get the review text associated with the current review.
+        review_text = _review_text(review)
+
+        yield (reviewer, chapter, timestamp, review_text)
+
+def scraper(storyid, reviews_num, rate_limit=3):
+    """
+    Scrapes the reviews for a certain story.
+    """
+
+    # There may be up to 15 reviews on a single page, therefore the number of
+    # pages the reviews  are stored on is equal to the following:
+    number_of_pages = (reviews_num // 15) + 1
+
+    # Returns a list of tuples (based on the contents of _reviews_in_table)
+    list_of_review_tuples = []
+
+    for p in range(number_of_pages):
+
+        # Rate limit
+        time.sleep(rate_limit)
+
+        soup = soupify('https://www.fanfiction.net/r/' + storyid +
+                       '/0/' + str(p+1) + '/')
+
+        for review in _reviews_in_table(soup):
+            list_of_review_tuples.append(review)
+
+    return list_of_review_tuples
