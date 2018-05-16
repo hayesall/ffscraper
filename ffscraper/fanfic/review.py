@@ -26,6 +26,8 @@ from __future__ import division
 
 from bs4 import BeautifulSoup as bs
 
+from ..utils import soupify
+
 import requests
 import time
 
@@ -70,9 +72,8 @@ def ReviewIDScraper(storyid, reviews_num, rate_limit=3):
         # Rate limit
         time.sleep(rate_limit)
 
-        r = requests.get('https://www.fanfiction.net/r/' + storyid + '/0/' + str(p+1) + '/')
-        html = r.text
-        soup = bs(html, 'html.parser')
+        soup = soupify('https://www.fanfiction.net/r/' + storyid +
+                       '/0/' + str(p+1) + '/')
 
         # Get the tbody, which is where the review table is stored
         t = soup.find('tbody')
@@ -128,9 +129,8 @@ def ReviewScraper(storyid, reviews_num, rate_limit=3):
         # Rate limit
         time.sleep(rate_limit)
 
-        r = requests.get('https://www.fanfiction.net/r/' + storyid + '/0/' + str(p+1) + '/')
-        html = r.text
-        soup = bs(html, 'html.parser')
+        soup = soupify('https://www.fanfiction.net/r/' + storyid +
+                       '/0/' + str(p+1) + '/')
 
         # Get the tbody, which is where the review table is stored
         t = soup.find('tbody')
@@ -144,18 +144,3 @@ def ReviewScraper(storyid, reviews_num, rate_limit=3):
                 if '/u/' in str(link):
                     # This is a way to get the user id.
                     print(str(link).split('"')[1].split('/')[2])
-
-            '''
-            print(review.text)
-            #exit()
-            time.sleep(0.5)
-            '''
-
-        #exit()
-
-        #print(p+1)
-
-if __name__ == '__main__':
-
-    raise(Exception('No main class in story.py'))
-    exit(1)

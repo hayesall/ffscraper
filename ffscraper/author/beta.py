@@ -15,9 +15,9 @@
 
 from __future__ import print_function
 
-from bs4 import BeautifulSoup as bs
+from ..utils import soupify
 
-import requests
+from bs4 import BeautifulSoup as bs
 import time
 
 def scraper(uid, rate_limit=3):
@@ -65,11 +65,4 @@ def scraper(uid, rate_limit=3):
     time.sleep(rate_limit)
 
     # Make a request to the site, make a BeautifulSoup instance for the html
-    r = requests.get('https://www.fanfiction.net/beta/' + uid)
-    html = r.text
-    soup = bs(html, 'html.parser')
-
-if __name__ == '__main__':
-    # This behavior is for testing, will likely be deprecated or changed later.
-
-    exit(0)
+    soup = soupify('https://www.fanfiction.net/beta/' + uid)

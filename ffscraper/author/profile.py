@@ -13,12 +13,20 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+"""
++----------------------+---------------------------------------------------+
+|      **Name**        |                  **Description**                  |
++----------------------+---------------------------------------------------+
+|      profile.py      | Module for scraping a user profile FanFiction.Net |
++----------------------+---------------------------------------------------+
+"""
+
 from __future__ import print_function
 from __future__ import division
 
-from bs4 import BeautifulSoup as bs
+from ..utils import soupify
 
-import requests
+from bs4 import BeautifulSoup as bs
 import time
 
 def _favorite_stories(soup):
@@ -27,11 +35,16 @@ def _favorite_stories(soup):
 
     Find the favorite stories and return them as a list.
 
+    .. note:: Currently crossover fandoms are not split or taken into account
+              closely. It may be useful to see how the crossover fandoms
+              correlate with other stories that the user likes.
+
     :param soup: Soup containing a page from FanFiction.Net
     :type soup: bs4.BeautifulSoup class
 
-    :returns: story-ids liked by the user.
-    :rtype: list
+    :returns: A list of story-ids liked by the user, and a dictionary mapping
+              a fandom to all of the stories that are part of that fandom.
+    :rtype: tuple
     """
 
     # "Favorite Stories" are stored in a z-list favstories.
@@ -53,6 +66,46 @@ def _favorite_stories(soup):
             favorites_inverted[fandom] = [storyid]
 
     return favs, favorites_inverted
+
+def _favorite_authors(soup):
+    """
+    .. versionadded:: 0.3.0
+
+    Find the favorite authors for a user and return them as a list.
+
+    :param soup: Soup containing a page from FanFiction.Net
+    :type soup: bs4.BeautifulSoup class
+
+    :returns: A list of user-ids corresponding to the authors liked by a user.
+    :rtype: list
+
+    Example:
+
+    .. code-block:: python
+
+                    import ffscraper as ffs
+
+                    # Get an example user (details are changed here)
+                    soup = ffs.utils.soupify('https://www.fanfiction.net/u/123')
+
+                    # Get their favorite authors via this function.
+                    fav_authors = ffs.author.profile._favorite_authors(soup)
+
+                    # We'll print to see the results
+                    print(fav_authors)
+
+    .. code-block:: bash
+
+                    ['124', '125', '126']
+    """
+
+    # Favorite Authors for a user is stored under a div with id='fa'
+    authors_table = soup.find('div', {'id': 'fa'})
+    if authors_table:
+        author_links = authors_table.find_all('a')
+        return [a['href'].split('/')[2] for a in author_links]
+    else:
+        return []
 
 def _metadata_storyid(soup_tag):
     """
@@ -142,20 +195,37 @@ def scraper(uid, rate_limit=3):
     :param rate_limit: Number of seconds to wait at the start of function call
                        in order to enforce scraper niceness.
     :type rate_limit: int.
-    :returns: Currently returns nothing.
+    :returns: Returns a dictionary containing favorite stories, favorite
+              authors.
+    :rtype: dict.
 
-    >>> from ffscraper.author import profile
-    >>> profile123 = profile.scraper('123')
+    .. code-block:: python
+
+                    # File: example.py
+                    import ffscraper as ffs
+
+                    # Scrape the profile of user 123 (details changed)
+                    profile = ffs.author.profile.scraper('123')
+
+                    # Show the key, value pairs for each item in the profile.
+                    for key in profile:
+                        print(key, '-', profile[key])
+
+    .. code-block:: bash
+
+                    $ python example.py
+                    uid - 123
+                    favorite_authors - ['134', '136', '138']
+                    favorite_stories - (['111', 'Hobbit'], {'Hobbit': ['111']})
     """
 
     # Rate Limit
     time.sleep(rate_limit)
 
     # Make a request to the site, make a BeautifulSoup instance for the html
-    r = requests.get('https://www.fanfiction.net/u/' + uid)
-    html = r.text
-    soup = bs(html, 'html.parser')
-
-    #soup.find_all('div', {'class': 'z-list favstories'})
-    #Returns a tuple of (favorite_stories, inverted_favorites)
-    return _favorite_stories(soup)
+    soup = soupify('https://www.fanfiction.net/u/' + uid)
+    return {
+                'uid': uid,
+                'favorite_authors': _favorite_authors(soup),
+                'favorite_stories': _favorite_stories(soup)
+            }

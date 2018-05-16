@@ -24,10 +24,10 @@
 from __future__ import print_function
 from __future__ import division
 
+from ..utils import soupify
 from . import review
 
 from bs4 import BeautifulSoup as bs
-import requests
 import time
 
 def _category_and_fandom(soup):
@@ -179,9 +179,7 @@ def scraper(storyid, rate_limit=3):
     time.sleep(rate_limit)
 
     # Make a request to the site, create a BeautifulSoup instance for the html
-    r = requests.get('https://www.fanfiction.net/s/' + storyid)
-    html = r.text
-    soup = bs(html, 'html.parser')
+    soup = soupify('https://www.fanfiction.net/s/' + storyid)
 
     # Check in case the fanfic does not exist
     if not _not_empty_fanfic(soup):

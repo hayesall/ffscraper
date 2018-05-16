@@ -31,7 +31,7 @@ else:
 from .fanfic import story
 from .fanfic import review
 from .author import profile
-from . import Utils
+from . import utils
 
 # <Metadata>
 __author__ = 'Alexander L. Hayes (@batflyer)'
@@ -100,13 +100,13 @@ if args.sid:
 
     # Create predicates for BoostSRL.
     predicates = []
-    predicates.append(Utils.PredicateLogicBuilder('author',
+    predicates.append(utils.PredicateLogicBuilder('author',
                                                   current_story['aid'],
                                                   current_story['sid']))
-    predicates.append(Utils.PredicateLogicBuilder('rating',
+    predicates.append(utils.PredicateLogicBuilder('rating',
                                                   current_story['sid'],
                                                   current_story['rating']))
-    predicates.append(Utils.PredicateLogicBuilder('genre',
+    predicates.append(utils.PredicateLogicBuilder('genre',
                                                   current_story['sid'],
                                                   current_story['genre']))
     for p in predicates:
@@ -116,7 +116,7 @@ elif args.file:
     # Import the sids from the file and scrape each of them.
 
     # Initialize the sids as a stack
-    sids = Utils.ImportStoryIDs(args.file)
+    sids = utils.ImportStoryIDs(args.file)
 
     # Initialize the number_of_sids to avoid recalculation and a counter from 0
     number_of_sids = len(sids)
@@ -139,7 +139,7 @@ elif args.file:
         sid = sids.pop()
 
         # Helpful progress bar
-        Utils.progress(counter, number_of_sids,
+        utils.progress(counter, number_of_sids,
                        status='Scraping: {0}...'.format(sid))
 
         # Try scraping the story. If it fails, log and move on.
@@ -167,13 +167,13 @@ elif args.file:
                                    'story' + current_story['sid']))
 
         # Create predicates for BoostSRL.
-        predicates.append(Utils.PredicateLogicBuilder('author',
+        predicates.append(utils.PredicateLogicBuilder('author',
                                                       current_story['aid'],
                                                       current_story['sid']))
-        predicates.append(Utils.PredicateLogicBuilder('rating',
+        predicates.append(utils.PredicateLogicBuilder('rating',
                                                       current_story['sid'],
                                                       current_story['rating']))
-        predicates.append(Utils.PredicateLogicBuilder('genre',
+        predicates.append(utils.PredicateLogicBuilder('genre',
                                                       current_story['sid'],
                                                       current_story['genre']))
 
@@ -185,7 +185,7 @@ elif args.file:
             # Create associated predicates and Cytoscape schemas.
             for reviewer in current_story['Reviewers']:
                 predicates.append(
-                    Utils.PredicateLogicBuilder('reviewed',
+                    utils.PredicateLogicBuilder('reviewed',
                                                 reviewer,
                                                 current_story['sid'])
                     )
@@ -222,13 +222,24 @@ elif args.file:
         uid = people.pop()
 
         # Helpful progress bar
-        Utils.progress(counter, number_of_uids,
+        utils.progress(counter, number_of_uids,
                        status='Scraping: {0}...'.format(uid))
 
         # Try scraping the profile, log if/where the scraper throws errors.
         try:
             logger.info('Started scraping uid: ' + uid)
-            fav_stories, inverted_favs = profile.scraper(uid, rate_limit=1)
+
+            # profile.scraper returns a dictionary of user information.
+            user_profile = profile.scraper(uid, rate_limit=1)
+
+            # Accessing that dictionary gets favorite stories, authors, etc.
+            fav_stories, inverted_favs = user_profile['favorite_stories']
+            favorite_authors = user_profile['favorite_authors']
+
+            """
+            fav_stories, inverted_favs = profile.scraper(
+                                        uid, rate_limit=1)['favorite_stories']
+            """
             logger.info('Finished scraping uid: ' + uid)
         except Exception:
             # If errors occur, log the exception and continue.
@@ -251,9 +262,18 @@ elif args.file:
                 for sid in inverted_favs[fandom]:
                     if sid in stories:
                         predicates.append(
-                            Utils.PredicateLogicBuilder('liked', uid, sid))
+                            utils.PredicateLogicBuilder('liked', uid, sid))
                         schema.append(
                             schemaString('user' + uid, 'liked', 'story' + sid))
+
+        # Create predicates for the user's favorite authors if those authors
+        # were observed during this session.
+        for author in favorite_authors:
+            if author in authors_and_reviewers:
+                predicates.append(
+                    utils.PredicateLogicBuilder('favoriteAuthor', uid, author))
+                schema.append(
+                    schemaString('user' + uid, 'favAuthor', 'user' + uid))
 
         with open(args.output, 'a') as f:
             for p in predicates:
