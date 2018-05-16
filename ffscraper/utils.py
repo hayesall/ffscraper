@@ -204,8 +204,3 @@ def soupify(url):
 
     html = requests.get(url).text
     return bs(html, 'html.parser')
-
-if __name__ == '__main__':
-
-    raise(Exception('No main class in Utils.py'))
-    exit(1)
