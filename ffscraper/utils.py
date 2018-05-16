@@ -168,6 +168,22 @@ def progress(count, total, status=''):
     sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
     sys.stdout.flush()
 
+def soupify(url):
+    """
+    .. versionadded:: 0.3.0
+
+    Helper function for returning the soup from a url.
+
+    :param url: A url to a web address.
+    :type url: str.
+    """
+
+    from bs4 import BeautifulSoup as bs
+    import requests
+
+    html = requests.get(url).text
+    return bs(html, 'html.parser')
+
 if __name__ == '__main__':
 
     raise(Exception('No main class in Utils.py'))
