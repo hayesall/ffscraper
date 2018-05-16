@@ -142,24 +142,53 @@ elif args.file:
         utils.progress(counter, number_of_sids,
                        status='Scraping: {0}...'.format(sid))
 
+        # Initialize predicates for BoostSRL and schema for Cytoscape.
+        predicates = []
+        schema = []
+
         # Try scraping the story. If it fails, log and move on.
         try:
             logger.info('Started scraping sid: ' + sid)
             current_story = story.scraper(sid, rate_limit=1)
             logger.info('Finished scraping sid: ' + sid)
+
         except Exception:
             # If errors occur, log the exception.
             logger.error('fanfiction.net/s/' + sid, exc_info=True)
             continue
 
+        # Try scraping reviews for the story. If it fails, log and move on.
+        if 'num_reviews' in current_story:
+            try:
+                logger.info('Scraping reviews for sid: ' + sid)
+                current_story_reviews = review.scraper(sid,
+                                            current_story['num_reviews'],
+                                            rate_limit=1)
+                logger.info('Finished reviews for sid: ' + sid)
+            except Exception:
+                logger.error('')
+                continue
+
+            for entry in current_story_reviews:
+                # (reviewer, chapter, timestamp, review_text)
+                if entry[0] != 'Guest':
+                    # Add the reviewer to the set of people.
+                    people.add(entry[0])
+
+                    predicates.append(
+                        utils.PredicateLogicBuilder('reviewed',
+                                                    entry[0],
+                                                    current_story['sid']))
+                    schema.append(
+                        schemaString('user' + entry[0],
+                                     'reviewed',
+                                     'story' + current_story['sid']))
+
+
         # Add the author of the current story to the set of people.
         people.add(current_story['aid'])
         # Add the current fandom to the set of fandoms.
         fandoms.add(current_story['fandom'])
-
-        # Initialize predicates for BoostSRL and schema for Cytoscape.
-        predicates = []
-        schema = []
 
         # Create a schema list for Cytoscape.
         schema.append(schemaString('user' + current_story['aid'],
@@ -177,6 +206,7 @@ elif args.file:
                                                       current_story['sid'],
                                                       current_story['genre']))
 
+        """
         if current_story.get('Reviewers'):
 
             # Add reviewers to the set of people.
@@ -192,6 +222,7 @@ elif args.file:
                 schema.append(schemaString('user' + reviewer,
                                            'reviewed',
                                            'story' + current_story['sid']))
+        """
 
         with open(args.output, 'a') as f:
             for p in predicates:
