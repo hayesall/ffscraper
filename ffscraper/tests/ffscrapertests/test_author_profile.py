@@ -23,6 +23,82 @@ import unittest
 sys.path.append('./')
 from ffscraper.author import profile
 
+class FavoriteAuthorsTest(unittest.TestCase):
+
+    # ffscraper.fanfic.author._favorite_authors
+
+    def test_favorite_authors_1(self):
+
+        soup = bs("""<div id='fa' class='tab-pane '>
+                    <table width=100%><tr>
+                    <TD VALIGN=TOP style='line-height:150%'>
+            	    <dl><a href='/u/123/usera'>usera</a></dl>
+                    <dl><a href='/u/124/userb'>userb</a></dl>
+                    <dl><a href='/u/125/userc'>userc</a></dl>
+                    </TD>
+                    <TD VALIGN=TOP style='line-height:150%'>
+            	    <dl><a href='/u/126/userd'>userd</a></dl>
+            	    <dl><a href='/u/127/usere'>usere</a></dl>
+                    </TD>
+                    <TD VALIGN=TOP style='line-height:150%'>
+            	    <dl><a href='/u/128/userf'>userf</a></dl>
+            	    <dl><a href='/u/129/userg'>userg</a></dl>
+                    </TD>
+                    </tr></table></div>""", 'html.parser')
+
+        expected = ['123', '124', '125', '126', '127', '128', '129']
+        reality = profile._favorite_authors(soup)
+        self.assertEqual(expected, reality)
+
+    def test_favorite_authors_2(self):
+
+        soup = bs("""<div id='fa' class='tab-pane '>
+                    <table width=100%><tr>
+                    <TD VALIGN=TOP style='line-height:150%'>
+            	    <dl><a href='/u/1/usera'>usera</a></dl>
+                    </TD>
+                    <TD VALIGN=TOP style='line-height:150%'>
+            	    <dl><a href='/u/2/userd'>userd</a></dl>
+                    </TD>
+                    <TD VALIGN=TOP style='line-height:150%'>
+            	    <dl><a href='/u/3/userf'>userf</a></dl>
+                    </TD>
+                    </tr></table></div>""", 'html.parser')
+
+        expected = ['1', '2', '3']
+        reality = profile._favorite_authors(soup)
+        self.assertEqual(expected, reality)
+
+    def test_favorite_authors_3(self):
+
+        soup = bs("""<div id='fa' class='tab-pane '>
+                    <table width=100%><tr>
+                    <TD VALIGN=TOP style='line-height:150%'>
+            	    <dl><a href='/u/1/usera'>usera</a></dl>
+                    </TD></tr></table></div>""", 'html.parser')
+
+        expected = ['1']
+        reality = profile._favorite_authors(soup)
+        self.assertEqual(expected, reality)
+
+    def test_favorite_authors_4(self):
+
+        soup = bs("""""", 'html.parser')
+
+        expected = []
+        reality = profile._favorite_authors(soup)
+        self.assertEqual(expected, reality)
+
+    def test_favorite_authors_5(self):
+
+        soup = bs("""<div id='fa' class='tab-pane '>
+                    <table width=100%><tr>
+                    </tr></table></div>""", 'html.parser')
+
+        expected = []
+        reality = profile._favorite_authors(soup)
+        self.assertEqual(expected, reality)
+
 class FavoriteStoriesTest(unittest.TestCase):
 
     # ffscraper.fanfic.author._favorite_stories

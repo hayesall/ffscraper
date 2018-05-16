@@ -27,11 +27,16 @@ def _favorite_stories(soup):
 
     Find the favorite stories and return them as a list.
 
+    .. note:: Currently crossover fandoms are not split or taken into account
+              closely. It may be useful to see how the crossover fandoms
+              correlate with other stories that the user likes.
+
     :param soup: Soup containing a page from FanFiction.Net
     :type soup: bs4.BeautifulSoup class
 
-    :returns: story-ids liked by the user.
-    :rtype: list
+    :returns: A list of story-ids liked by the user, and a dictionary mapping
+              a fandom to all of the stories that are part of that fandom.
+    :rtype: tuple
     """
 
     # "Favorite Stories" are stored in a z-list favstories.
@@ -53,6 +58,46 @@ def _favorite_stories(soup):
             favorites_inverted[fandom] = [storyid]
 
     return favs, favorites_inverted
+
+def _favorite_authors(soup):
+    """
+    .. versionadded:: 0.3.0
+
+    Find the favorite authors for a user and return them as a list.
+
+    :param soup: Soup containing a page from FanFiction.Net
+    :type soup: bs4.BeautifulSoup class
+
+    :returns: A list of user-ids corresponding to the authors liked by a user.
+    :rtype: list
+
+    Example:
+
+    .. code-block:: python
+
+                    import ffscraper as ffs
+
+                    # Get an example user (details are changed here)
+                    soup = ffs.utils.soupify('https://www.fanfiction.net/u/123')
+
+                    # Get their favorite authors via this function.
+                    fav_authors = ffs.author.profile._favorite_authors(soup)
+
+                    # We'll print to see the results
+                    print(fav_authors)
+
+    .. code-block:: bash
+
+                    ['124', '125', '126']
+    """
+
+    # Favorite Authors for a user is stored under a div with id='fa'
+    authors_table = soup.find('div', {'id': 'fa'})
+    if authors_table:
+        author_links = authors_table.find_all('a')
+        return [a['href'].split('/')[2] for a in author_links]
+    else:
+        return []
 
 def _metadata_storyid(soup_tag):
     """
