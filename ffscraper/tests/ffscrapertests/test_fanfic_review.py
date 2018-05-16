@@ -57,7 +57,7 @@ class ReviewsTest(unittest.TestCase):
                     </td></tr></tbody>""", 'html.parser')
 
         reviews = review._reviews_in_table(soup)
-        reality = [review for review in reviews]
+        reality = [r for r in reviews]
 
         self.assertEqual(reality[0][0], '123')
         self.assertEqual(reality[0][1], '10')
