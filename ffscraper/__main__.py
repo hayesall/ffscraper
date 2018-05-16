@@ -17,6 +17,8 @@ from __future__ import print_function
 from __future__ import division
 
 # Python Standard Library Modules
+from heapq import heappush
+from heapq import heappop
 import argparse
 import copy
 import logging
@@ -122,6 +124,9 @@ elif args.file:
     number_of_sids = len(sids)
     counter = 0
 
+    # Timestamp heap
+    timestamp_heap = []
+
     # Initialize a set of people, a set of fandoms, and copy the stories.
     people = set()
     fandoms = set()
@@ -157,6 +162,12 @@ elif args.file:
             logger.error('fanfiction.net/s/' + sid, exc_info=True)
             continue
 
+        # Add the timestamps to the timestamp_heap
+        heappush(timestamp_heap, (int(current_story['published']),
+                                  'published' + sid))
+        heappush(timestamp_heap, (int(current_story['updated']),
+                                  'lastupdated' + sid))
+
         # Try scraping reviews for the story. If it fails, log and move on.
         if 'num_reviews' in current_story:
             try:
@@ -171,6 +182,10 @@ elif args.file:
 
             for entry in current_story_reviews:
                 # (reviewer, chapter, timestamp, review_text)
+
+                heappush(timestamp_heap, (int(entry[2]),
+                                         'reviewed' + sid))
+
                 if entry[0] != 'Guest':
                     # Add the reviewer to the set of people.
                     people.add(entry[0])
@@ -312,6 +327,14 @@ elif args.file:
         with open(args.Cout, 'a') as f:
             for p in schema:
                 f.write(p + '\n')
+
+    logger.info('====== Starting Phase III ======')
+    logger.info('Popping timestamps from the timestamp_heap:')
+
+    with open('timestamps.txt', 'w') as f:
+        for _ in range(len(timestamp_heap)):
+            action = heappop(timestamp_heap)
+            f.write(str(action[0]) + ' ' + action[1] + '\n')
 
 # Shut down the logger and exit with no errors.
 logger.info('Reached bottom of file, shutting down logger.')
