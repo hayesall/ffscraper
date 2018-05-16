@@ -41,3 +41,4 @@ __status__ = 'Prototype'
 from . import fanfic
 from . import author
 from . import nlp
+from . import utils

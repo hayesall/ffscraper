@@ -176,6 +176,15 @@ def soupify(url):
 
     :param url: A url to a web address.
     :type url: str.
+
+    :returns: Beautiful Soup html parser for the text at the url.
+    :rtype: bs4.BeautifulSoup class
+
+    .. code-block:: python
+
+                    import ffscraper as ffs
+
+                    soup = ffs.utils.soupify('https://www.fanfiction.net/u/123')
     """
 
     from bs4 import BeautifulSoup as bs
