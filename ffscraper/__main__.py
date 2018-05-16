@@ -247,6 +247,14 @@ elif args.file:
                 f.write(p + '\n')
 
     logger.info('====== Starting Phase II ======')
+    logger.info('Popping timestamps from the timestamp_heap:')
+
+    with open('timestamps.txt', 'w') as f:
+        for _ in range(len(timestamp_heap)):
+            action = heappop(timestamp_heap)
+            f.write(str(action[0]) + ' ' + action[1] + '\n')
+
+    logger.info('====== Starting Phase III ======')
     logger.info('Encountered ' + str(len(fandoms)) +
                 ' fandom(s) during Phase I.')
     logger.info('Fandoms encountered: ' + str(fandoms))
@@ -327,14 +335,6 @@ elif args.file:
         with open(args.Cout, 'a') as f:
             for p in schema:
                 f.write(p + '\n')
-
-    logger.info('====== Starting Phase III ======')
-    logger.info('Popping timestamps from the timestamp_heap:')
-
-    with open('timestamps.txt', 'w') as f:
-        for _ in range(len(timestamp_heap)):
-            action = heappop(timestamp_heap)
-            f.write(str(action[0]) + ' ' + action[1] + '\n')
 
 # Shut down the logger and exit with no errors.
 logger.info('Reached bottom of file, shutting down logger.')
