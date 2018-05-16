@@ -13,10 +13,10 @@ Subpackages
 Submodules
 ----------
 
-ffscraper\.Utils module
+ffscraper\.utils module
 -----------------------
 
-.. automodule:: ffscraper.Utils
+.. automodule:: ffscraper.utils
     :members:
     :undoc-members:
     :show-inheritance:

@@ -37,10 +37,22 @@ def ImportStoryIDs(path_to_file):
 
     Example:
 
-    >>> from ffscraper.Utils import ImportStoryIDs
-    >>> sids = ffs.Utils.ImportStoryIDs('data/Coraline/sids.txt')
-    >>> print(sids)
-    ['123', '344']
+    .. code-block:: python
+
+                    # File: example.py
+                    import ffscraper as ffs
+
+                    # Story-ids in this example are stored in a text file.
+                    sids = ffs.utils.ImportStoryIDs('data/Coraline/sids.txt')
+                    print(sids)
+
+    .. code-block:: bash
+
+                    $ cat data/Coraline/sids.txt
+                    123
+                    344
+                    $ python example.py
+                    ['123', '344']
 
     .. warning::
        This function was designed and tested with Unix-style paths and
@@ -71,7 +83,7 @@ def PredicateLogicBuilder(type, id, value):
 
     Example:
 
-    >>> from ffscraper.Utils import PredicateLogicBuilder
+    >>> from ffscraper.utils import PredicateLogicBuilder
     >>> f = PredicateLogicBuilder('author', '123', '456')
     >>> print(f)
     author("123","456").
@@ -129,7 +141,7 @@ def progress(count, total, status=''):
 
     Example:
 
-    >>> from ffscraper.Utils import progress
+    >>> from ffscraper.utils import progress
     >>> from time import sleep
     >>> for i in range(1,10):
     ...     sleep(1)
