@@ -30,6 +30,8 @@ if sys.version_info < (3,0,0):
 else:
     import pickle
 
+from textblob import TextBlob
+
 from .fanfic import story
 from .fanfic import review
 from .author import profile
@@ -187,8 +189,9 @@ elif args.file:
                                          'reviewed' + sid))
 
                 # Write the review_text to a file
-                with open('review_text.txt', 'a') as f:
-                    f.write('[' + entry[0] + ',' + sid + '] ' + entry[3] + '\n')
+                # Log the review sentiment (polarity, subjectivity)
+                review_text = TextBlob(entry[3])
+                logger.info('[' + entry[0] + ',' + sid + '] ' + str(review_text.sentiment))
 
                 if entry[0] != 'Guest':
                     # Add the reviewer to the set of people.
