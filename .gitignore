@@ -1,7 +1,12 @@
-# Fairly standard .gitignore for Python, courtesy of GitHub.
-
 # Emacs backup files, just in case.
 *~
+facts.txt
+cytoscape.txt
+sids.txt
+timestamps.txt
+review_text.txt
+
+# Fairly standard .gitignore for Python, courtesy of GitHub.
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -104,7 +109,3 @@ ENV/
 
 # mypy
 .mypy_cache/
-facts.txt
-cytoscape.txt
-sids.txt
-timestamps.txt

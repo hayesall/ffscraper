@@ -177,7 +177,7 @@ elif args.file:
                                             rate_limit=1)
                 logger.info('Finished reviews for sid: ' + sid)
             except Exception:
-                logger.error('')
+                logger.error('Review: /s/' + sid, exc_info=True)
                 continue
 
             for entry in current_story_reviews:
@@ -185,6 +185,10 @@ elif args.file:
 
                 heappush(timestamp_heap, (int(entry[2]),
                                          'reviewed' + sid))
+
+                # Write the review_text to a file
+                with open('review_text.txt', 'a') as f:
+                    f.write('[' + entry[0] + ',' + sid + '] ' + entry[3] + '\n')
 
                 if entry[0] != 'Guest':
                     # Add the reviewer to the set of people.
