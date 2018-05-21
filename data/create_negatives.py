@@ -23,12 +23,16 @@ BoostSRL needs negative examples to function correctly (since it is a discrim-
 inative learner). Since negative examples do not explicitly exist in this data,
 we need to 'halucinate' them based on what is not in the positive examples.
 
+This currently has a hard-coded assumption that the relation of interest is
+'liked'. This assumption should be rethought in the future if other targets
+may be of interest.
+
 Example usage:
 
 $ head -n 3 posEx.txt
-author("818854","2627916").
-author("794226","2358854").
-author("271295","2370708").
+liked("818854","2627916").
+liked("794226","2358854").
+liked("271295","2370708").
 $
 $ python create_negatives.py -f posEx.txt
 """
@@ -119,7 +123,7 @@ def HallucinateNegatives(pos_list):
         for story in all_stories:
 
             if not true_examples.get(tuple([author, story])):
-                neg_list.append('author(' + author + ',' + story + ').')
+                neg_list.append('liked(' + author + ',' + story + ').')
 
     # The length of the false_examples will be massive. On a set I was experi-
     # menting with, 423 positives resulted in 177,874 negatives.

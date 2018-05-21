@@ -25,8 +25,8 @@
 cp facts.txt facts-orig.txt
 
 # Separate the authors from the facts
-grep "author" facts.txt | sort -R > posEx.txt
-grep -v "author" facts.txt > temp
+grep "liked" facts.txt | sort -R > posEx.txt
+grep -v "liked" facts.txt > temp
 mv temp facts.txt
 
 # Create train and test directories, or remove them if they existed.

@@ -1,9 +1,16 @@
 setParam: treeDepth=2.
 setParam: nodeSize=2.
 
-mode: author(+aid, +sid).
-mode: rating(+sid, #rating).
-mode: genre(+sid, #genre).
+mode: liked(+aid, +sid).
+
+mode: favoriteAuthor(+aid, -aid).
+mode: favoriteAuthor(-aid, +aid).
+
+mode: author(+aid, -sid).
+mode: author(-aid, +sid).
 
 mode: reviewed(+aid, -sid).
 mode: reviewed(-aid, +sid).
+
+mode: rating(+sid, #rating).
+mode: genre(+sid, #genre).

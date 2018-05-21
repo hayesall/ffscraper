@@ -19,6 +19,7 @@
 #   -a      Set the number of runs to average over (Default: 10)
 #   -o      Set the output file location (Default: performance.txt)
 #   -s      Use softmax boosting (Default: False)
+#   -t      Set target (Default: liked)
 
 # License:
 #   Copyright (c) 2018 Alexander L. Hayes (@batflyer)
@@ -35,8 +36,10 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+# Parameters set during getopts
 averageover=10
 outputfile="performance"
+target="liked"
 softmaxboosting=
 
 while getopts "a:ho:s" o; do
@@ -47,7 +50,7 @@ while getopts "a:ho:s" o; do
       ;;
     h)
       # Show help information and exit.
-      head -n 36 $0 | tail -n +3 | sed 's/#//'
+      head -n 37 $0 | tail -n +3 | sed 's/#//'
       exit 0
       ;;
     o)
@@ -57,6 +60,10 @@ while getopts "a:ho:s" o; do
     s)
       # Use softmax boosting (Default: False)
       softmaxboosting="SOFTM"
+      ;;
+    t)
+      # Set target to something other than the defualt value.
+      target="$OPTARG"
       ;;
   esac
 done
@@ -83,14 +90,14 @@ function runBoostingJob() {
 
     # Learning (either softmax or not)
     if [[ $softmaxboosting ]]; then
-      java -jar v1-0.jar -l -softm -alpha 0 -beta 2 -train learn/ -target author -trees 20 > learnout.log
+      java -jar v1-0.jar -l -softm -alpha 0 -beta 2 -train learn/ -target $target -trees 20 > learnout.log
     else
-      java -jar v1-0.jar -l -train learn/ -target author -trees 20 > learnout.log
+      java -jar v1-0.jar -l -train learn/ -target $target -trees 20 > learnout.log
     fi
     echo "    Learning complete."
 
     # Inference
-    java -jar v1-0.jar -i -model learn/models/ -test infer/ -target author -trees 20 -aucJarPath . > inferout.log
+    java -jar v1-0.jar -i -model learn/models/ -test infer/ -target $target -trees 20 -aucJarPath . > inferout.log
     echo "    Inference complete."
 
     # Record the results to the outputfile.
