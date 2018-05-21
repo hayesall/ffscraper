@@ -327,7 +327,7 @@ elif args.file:
                 predicates.append(
                     utils.PredicateLogicBuilder('favoriteAuthor', uid, author))
                 schema.append(
-                    schemaString('user' + uid, 'favAuthor', 'user' + uid))
+                    schemaString('user' + uid, 'favAuthor', 'user' + author))
 
         with open(args.output, 'a') as f:
             for p in predicates:
