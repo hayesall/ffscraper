@@ -1,0 +1,7 @@
+coverage
+pytest
+pytest-cov
+unittest2
+bs4
+requests
+nltk
