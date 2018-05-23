@@ -30,9 +30,11 @@ if sys.version_info < (3,0,0):
 else:
     import pickle
 
+# Non-Standard Library Modules
 from textblob import TextBlob
 from tqdm import tqdm
 
+# Relative imports from ffscraper
 from .fanfic import story
 from .fanfic import review
 from .author import profile
