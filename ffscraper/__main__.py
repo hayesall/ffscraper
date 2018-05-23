@@ -31,6 +31,7 @@ else:
     import pickle
 
 from textblob import TextBlob
+from tqdm import tqdm
 
 from .fanfic import story
 from .fanfic import review
