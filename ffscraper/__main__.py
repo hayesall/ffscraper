@@ -50,19 +50,6 @@ __email__ = 'alexander@batflyer.net'
 __status__ = 'Prototype'
 # </Metadata>
 
-# <Logging>
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-log_handler = logging.FileHandler('main_log.log')
-log_handler.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-log_handler.setFormatter(formatter)
-
-logger.addHandler(log_handler)
-logger.info('Started logger.')
-# </Logging>
-
 # <Argument Parser>
 parser = argparse.ArgumentParser(
     description='''Scraper for FanFiction.Net.''',
@@ -91,15 +78,26 @@ parser.add_argument('-o', '--output', type=str, default='facts.txt',
 
 args = parser.parse_args()
 
-def schemaString(a1, a2, a3):
-    """
-    Return the the arguments as a string for use in Cytoscape.
-    """
-    return a1 + ' ' + a2 + ' ' + a3
-
 if args.version:
+    # Print version and exit.
     print(__version__)
     exit(0)
+
+if args.verbose:
+    # If verbose mode is turned on, log outputs.
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+
+    log_handler = logging.FileHandler('main_log.log')
+    log_handler.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - \
+                                  %(levelname)s - %(message)s')
+    log_handler.setFormatter(formatter)
+
+    logger.addHandler(log_handler)
+    logger.info('Started logger.')
+
+import pdb; pdb.set_trace()
 
 if args.sid:
     # Scrape the contents of a single file from FanFiction.Net
@@ -138,8 +136,10 @@ elif args.file:
     stories = copy.copy(sids)
 
     # Phase I: Scrape stories.
-    logger.info('====== Starting Phase I ======')
-    logger.info('Beginning loop with ' + str(number_of_sids) + ' stories.')
+    if args.verbose:
+        logger.info('====== Starting Phase I ======')
+        logger.info('Beginning loop with ' + str(number_of_sids) + ' stories.')
+
     while sids:
 
         # Increment our counter.
@@ -158,13 +158,16 @@ elif args.file:
 
         # Try scraping the story. If it fails, log and move on.
         try:
-            logger.info('Started scraping sid: ' + sid)
+            if args.verbose:
+                logger.info('Started scraping sid: ' + sid)
             current_story = story.scraper(sid, rate_limit=1)
-            logger.info('Finished scraping sid: ' + sid)
+            if args.verbose:
+                logger.info('Finished scraping sid: ' + sid)
 
         except Exception:
             # If errors occur, log the exception.
-            logger.error('fanfiction.net/s/' + sid, exc_info=True)
+            if args.verbose:
+                logger.error('fanfiction.net/s/' + sid, exc_info=True)
             continue
 
         # Add the timestamps to the timestamp_heap
@@ -176,13 +179,16 @@ elif args.file:
         # Try scraping reviews for the story. If it fails, log and move on.
         if 'num_reviews' in current_story:
             try:
-                logger.info('Scraping reviews for sid: ' + sid)
+                if args.verbose:
+                    logger.info('Scraping reviews for sid: ' + sid)
                 current_story_reviews = review.scraper(sid,
                                             current_story['num_reviews'],
                                             rate_limit=1)
-                logger.info('Finished reviews for sid: ' + sid)
+                if args.verbose:
+                    logger.info('Finished reviews for sid: ' + sid)
             except Exception:
-                logger.error('Review: /s/' + sid, exc_info=True)
+                if args.verbose:
+                    logger.error('Review: /s/' + sid, exc_info=True)
                 continue
 
             for entry in current_story_reviews:
@@ -194,7 +200,9 @@ elif args.file:
                 # Write the review_text to a file
                 # Log the review sentiment (polarity, subjectivity)
                 review_text = TextBlob(entry[3])
-                logger.info('[' + entry[0] + ',' + sid + '] ' + str(review_text.sentiment))
+                if args.verbose:
+                    logger.info('[' + entry[0] + ',' + sid + '] ' + \
+                                str(review_text.sentiment))
 
                 if entry[0] != 'Guest':
                     # Add the reviewer to the set of people.
@@ -256,21 +264,25 @@ elif args.file:
             for p in schema:
                 f.write(p + '\n')
 
-    logger.info('====== Starting Phase II ======')
-    logger.info('Popping timestamps from the timestamp_heap:')
+    if args.verbose:
+        logger.info('====== Starting Phase II ======')
+        logger.info('Popping timestamps from the timestamp_heap:')
 
     with open('timestamps.txt', 'w') as f:
         for _ in range(len(timestamp_heap)):
             action = heappop(timestamp_heap)
             f.write(str(action[0]) + ' ' + action[1] + '\n')
 
-    logger.info('====== Starting Phase III ======')
-    logger.info('Encountered ' + str(len(fandoms)) +
-                ' fandom(s) during Phase I.')
-    logger.info('Fandoms encountered: ' + str(fandoms))
-    logger.info('Encountered ' + str(len(people)) +
-                ' user(s) during Phase I.')
-    # Phase II: User Profiles from the set of users observed during Phase I.
+
+    if args.verbose:
+        logger.info('====== Starting Phase III ======')
+        logger.info('Encountered ' + str(len(fandoms)) +
+                    ' fandom(s) during Phase I.')
+        logger.info('Fandoms encountered: ' + str(fandoms))
+        logger.info('Encountered ' + str(len(people)) +
+                    ' user(s) during Phase I.')
+
+    # Phase III: User Profiles from the set of users observed during Phase I.
     # Initialize the number_of_sids to avoid recalculation and a counter from 0
     number_of_uids = len(people)
     counter = 0
@@ -291,7 +303,8 @@ elif args.file:
 
         # Try scraping the profile, log if/where the scraper throws errors.
         try:
-            logger.info('Started scraping uid: ' + uid)
+            if args.verbose:
+                logger.info('Started scraping uid: ' + uid)
 
             # profile.scraper returns a dictionary of user information.
             user_profile = profile.scraper(uid, rate_limit=1)
@@ -304,10 +317,12 @@ elif args.file:
             fav_stories, inverted_favs = profile.scraper(
                                         uid, rate_limit=1)['favorite_stories']
             """
-            logger.info('Finished scraping uid: ' + uid)
+            if args.verbose:
+                logger.info('Finished scraping uid: ' + uid)
         except Exception:
             # If errors occur, log the exception and continue.
-            logger.error('fanfiction.net/u/' + uid, exc_info=True)
+            if args.verbose:
+                logger.error('fanfiction.net/u/' + uid, exc_info=True)
             continue
 
         # Initialize predicates for BoostSRL and schema for Cytoscape.
@@ -319,8 +334,9 @@ elif args.file:
             relative_score = profile._relative_likes(fav_stories,
                                                      inverted_favs, fandom)
 
-            logger.info('user/fandom: ' + uid + '/' + fandom + ': ' +
-                        str(relative_score))
+            if args.verbose:
+                logger.info('user/fandom: ' + uid + '/' + fandom + ': ' +
+                            str(relative_score))
 
             if fandom in inverted_favs:
                 for sid in inverted_favs[fandom]:
@@ -347,6 +363,8 @@ elif args.file:
                 f.write(p + '\n')
 
 # Shut down the logger and exit with no errors.
-logger.info('Reached bottom of file, shutting down logger.')
-logging.shutdown()
+if args.verbose:
+    logger.info('Reached bottom of file, shutting down logger.')
+    logging.shutdown()
+
 exit(0)
