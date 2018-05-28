@@ -13,16 +13,30 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-def PredicateBuilder(predType, *values):
+def predicateFormat(predType, *values):
     """
     .. versionadded:: 0.3.0
 
     Converts inputs into predicates, creating examples and facts in predicate-
     logic format.
 
-    >>> PredicateBuilder('action', 'value1', 'value2')
-    action(value1, value2)
-    
+    :param predType: The action which relates one or more values.
+    :type predType: str.
+    :param \*values: Values which are related to one another by the action.
+    :type \*values: str.
+
+    Please forgive the recursive parameter definitions, they may be more
+    obvious if seen by example:
+
+    >>> predicateFormat('action', 'value1', 'value2')
+    action("value1","value2").
+
+    >>> predicateFormat('friends', 'harry', 'ron')
+    friends("harry","ron").
+
+    >>> predicateFormat('liked', 'person1', 'story3')
+    liked("person1","story3").
+
     .. seealso::
        This function is mostly included for easy conversion to the format used
        by BoostSRL, the learning/inference engine in mind while building this.
@@ -30,8 +44,19 @@ def PredicateBuilder(predType, *values):
        BoostSRL - Boosting for Statistical Relational Learning
        https://github.com/starling-lab/BoostSRL
        https://starling.utdallas.edu/software/boostsrl/
+
     """
-    ret = predType.replace(' ', '') + '('
+    ret = predType.replace(' ', '') + '("'
     for v in values:
-        ret += v.replace(' ', '') + ','
-    return ret[:-1] + ').'
+        ret += v.replace(' ', '') + '","'
+    return ret[:-2] + ').'
+
+def PredicateLogicBuilder(predType, *values):
+    """
+    .. deprecated:: 0.3.0
+
+    Use :func:`predicateFormat` instead.
+
+    """
+    print('Deprecation warning: please use predicateFormat(predType, *values)')
+    exit(2)
