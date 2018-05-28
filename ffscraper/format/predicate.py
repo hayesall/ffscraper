@@ -50,13 +50,3 @@ def predicateFormat(predType, *values):
     for v in values:
         ret += v.replace(' ', '') + '","'
     return ret[:-2] + ').'
-
-def PredicateLogicBuilder(predType, *values):
-    """
-    .. deprecated:: 0.3.0
-
-    Use :func:`predicateFormat` instead.
-
-    """
-    print('Deprecation warning: please use predicateFormat(predType, *values)')
-    exit(2)
