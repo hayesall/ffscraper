@@ -39,6 +39,7 @@ __email__ = 'alexander@batflyer.net'
 __status__ = 'Prototype'
 
 from . import fanfic
+from .format import format
 from . import author
 from . import nlp
 from . import utils
