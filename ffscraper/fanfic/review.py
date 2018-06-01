@@ -31,6 +31,7 @@ from ..utils import soupify
 import requests
 import time
 
+
 def ReviewIDScraper(storyid, reviews_num, rate_limit=3):
     """
     .. deprecated:: 0.3.0
@@ -68,6 +69,7 @@ def ReviewIDScraper(storyid, reviews_num, rate_limit=3):
     return list(set(user_id_list))
     """
 
+
 def _review_chapter_and_timestamp(soup_tag):
     """
     .. versionadded:: 0.3.0
@@ -90,6 +92,7 @@ def _review_chapter_and_timestamp(soup_tag):
 
     return chapter, time_stamp
 
+
 def _review_text(soup_tag):
     """
     .. versionadded:: 0.3.0
@@ -97,6 +100,7 @@ def _review_text(soup_tag):
     Returns the text in a review entry.
     """
     return soup_tag.find('div', style='margin-top:5px').text
+
 
 def _review_user(soup_tag):
     """
@@ -118,6 +122,7 @@ def _review_user(soup_tag):
     # Guests are usually named "Guest" but occasionally they have a name
     # associated with them still.
     return 'Guest'
+
 
 def _reviews_in_table(soup):
     """
@@ -153,6 +158,7 @@ def _reviews_in_table(soup):
         review_text = _review_text(review)
 
         yield (reviewer, chapter, timestamp, review_text)
+
 
 def scraper(storyid, reviews_num, rate_limit=3):
     """

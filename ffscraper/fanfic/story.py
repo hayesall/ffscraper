@@ -30,14 +30,16 @@ from . import review
 from bs4 import BeautifulSoup as bs
 import time
 
+
 def _category_and_fandom(soup):
     """
     .. versionadded:: 0.3.0
 
     Returns the FanFiction category and fandom from the soup.
 
-    * Category is one of nine possible categories from ``['Anime/Manga', 'Books',
-      'Cartoons', 'Comics', 'Games', 'Misc', 'Movies', 'Plays/Musicals', 'TV']``
+    * Category is one of nine possible categories from ``['Anime/Manga',
+      'Books', 'Cartoons', 'Comics', 'Games', 'Misc', 'Movies',
+      'Plays/Musicals', 'TV']``
     * Fandom is the specific sub-category, whereas category may be
      ``Plays/Musicals``, the fandom could be ``RENT``, ``Wicked``, etc.
 
@@ -68,6 +70,7 @@ def _category_and_fandom(soup):
     c_f = soup.find('div', {'id': 'pre_story_links'}).find_all('a', href=True)
     return c_f[0].text, c_f[1].text
 
+
 def _not_empty_fanfic(soup):
     """
     .. versionadded:: 0.3.0
@@ -85,11 +88,12 @@ def _not_empty_fanfic(soup):
     empty = soup.find('span', {'class': 'gui_warning'})
     return not empty
 
+
 def _timestamps(soup):
     """
     .. versionadded:: 0.3.0
 
-    'Publication' and 'last updated' are the two timestamps which are available.
+    'Publication' and 'last updated' are two available timestamps.
     If only one timestamp is listed, the story's update and publication time
     should be the same.
 
@@ -114,6 +118,7 @@ def _timestamps(soup):
         when_published = timestamps[1]['data-xutime']
 
     return when_published, when_updated
+
 
 def _title(soup):
     """
@@ -144,6 +149,7 @@ def _title(soup):
                     'There Once was a Man from Gilneas'
     """
     return soup.find('b', {'class': 'xcontrast_txt'}).text
+
 
 def scraper(storyid, rate_limit=3):
     """
@@ -189,23 +195,24 @@ def scraper(storyid, rate_limit=3):
         category, fandom = _category_and_fandom(soup)
 
         # Get the metadata describing properties of the story.
-        # This should contain the metadata line (e.g. rating, genre, words, etc.)
+        # This should contain the metadata line (e.g. rating, genre, etc.)
         metadata_html = soup.find('span', {'class': 'xgray xcontrast_txt'})
         metadata = metadata_html.text.replace('Sci-Fi', 'SciFi')
         metadata = [s.strip() for s in metadata.split('-')]
 
-        # Abstract and story are identified by <div class='xcontrast_txt'>...</div>
+        # Abstract and story have <div class='xcontrast_txt'>...</div>
         abstract_and_story = soup.find_all('div', {'class': 'xcontrast_txt'})
         abstract = abstract_and_story[0].text
         story_text = abstract_and_story[1].text
 
         when_published, when_updated = _timestamps(soup)
 
-        # There are several links on the page, the 2nd is a link to the author's
-        # page. Get the second link href tag (which will look something like '/u/1838183/thisname')
-        authorid = soup.find_all('a', {'class': 'xcontrast_txt'})[2].get('href').split('/')[2]
+        # There are several links on the page, the 2nd is a link to the author
+        # page. Get the second link href tag (which will look something like
+        # '/u/1838183/thisname')
+        authorid = soup.find_all('a', {'class':
+                                 'xcontrast_txt'})[2].get('href').split('/')[2]
 
-        #print(metadata_html.find_all(attrs={'data-xutime': True}))
         story = {
             'sid': storyid,
             'aid': authorid,
@@ -216,21 +223,15 @@ def scraper(storyid, rate_limit=3):
             'updated': when_updated,
             'rating': metadata[0],
             'genre': metadata[2]
-            #'metadata': metadata,
-            #'abstract': abstract,
-            #'story_text': story_text
+            # 'metadata': metadata,
+            # 'abstract': abstract,
+            # 'story_text': story_text
         }
 
         for m in metadata:
             if 'Reviews' in m:
-                num_of_reviews = int(m.split()[1].replace(',',''))
+                num_of_reviews = int(m.split()[1].replace(',', ''))
 
                 story['num_reviews'] = num_of_reviews
 
-                #users = review.ReviewIDScraper(storyid, num_of_reviews, rate_limit=rate_limit)
-                #story['Reviewers'] = users
-
-        #print(metadata)
-
-        #print(soup.prettify())
         return story
