@@ -56,6 +56,55 @@ log_handler.setFormatter(formatter)
 logger.addHandler(log_handler)
 logger.info('Started logger.')
 
+def phase0(fandom, log=False):
+    """
+    Scrape story-ids for a particular fandom.
+
+    :param fandom: The identifier on FanFiction.Net pointing to a specific
+                   community. e.g. '/book/Harry-Potter'
+    :type fandom: str.
+
+    Example:
+
+    .. code-block:: python
+
+                    from ffscraper.phases import phase0
+
+                    sids = phase0('/book/Harry-Potter')
+
+    General notes on how filters may be applied in order to tailor the stories
+    one is looking for:
+
+    Sorting Methods
+    ---------------
+    Update Date: &srt=1 (most recent first)
+    Publish Date: &srt=2 (most recent first)
+    Reviews: &srt=3 (most to least)
+    Favorites: &srt=4
+    Follows: &srt=5
+
+    Fiction Rating
+    --------------
+    All: &r=10
+    K-T: &r=103
+    K-K+: &r=102
+    K: &r=1
+    K+: &r=2
+    T: &r=3
+    M: &r=4
+
+    Status
+    ------
+    In Progress: &s=1
+    Complete: &s=2
+
+    Language
+    --------
+    English: &lan=1
+
+    """
+    pass
+
 # Phase I: Scraping stories
 
 def phase1(sids, scrape_reviews=True, log=False):
@@ -140,6 +189,7 @@ def phase1(sids, scrape_reviews=True, log=False):
         logger.info('====== Ending Phase I ======')
     return people, fandoms, timestamps
 
+
 def phase2(timestamps, log=False):
     """
     Order and process various timestamps.
@@ -163,6 +213,7 @@ def phase2(timestamps, log=False):
         print(str(action[0]) + ' ' + action[1])
 
     if log:  logger.info('====== Ending Phase II ======')
+
 
 def phase3(uids, fandoms=[], log=False):
     """
