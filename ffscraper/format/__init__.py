@@ -16,6 +16,7 @@
 from .cytoscape import cytoscapeFormat
 from .predicate import predicateFormat
 
+
 def format(predType, *values, **formats):
     """
     .. versionadded:: 0.3.0
@@ -62,6 +63,6 @@ def format(predType, *values, **formats):
             # Detailed explanation in cytoscape.py
             structures['cytoscape'] = cytoscapeFormat(predType, *values)
         else:
-            raise(Exception('Cytoscape fromat requires exactly two arguments.'))
+            raise(Exception('Cytoscape requires exactly two arguments.'))
 
     return structures

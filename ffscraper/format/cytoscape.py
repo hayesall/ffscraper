@@ -13,6 +13,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+
 def cytoscapeFormat(predType, val1, val2):
     """
     .. versionadded:: 0.3.0
@@ -63,5 +64,5 @@ def cytoscapeFormat(predType, val1, val2):
 
     """
     return val1.replace(' ', '') + ' ' + \
-           predType.replace(' ','') + ' ' + \
-           val2.replace(' ','')
+        predType.replace(' ', '') + ' ' + \
+        val2.replace(' ', '')

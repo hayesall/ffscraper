@@ -29,6 +29,7 @@ from ..utils import soupify
 from bs4 import BeautifulSoup as bs
 import time
 
+
 def _favorite_stories(soup):
     """
     .. versionadded:: 0.3.0
@@ -67,6 +68,7 @@ def _favorite_stories(soup):
 
     return favs, favorites_inverted
 
+
 def _favorite_authors(soup):
     """
     .. versionadded:: 0.3.0
@@ -86,7 +88,7 @@ def _favorite_authors(soup):
                     import ffscraper as ffs
 
                     # Get an example user (details are changed here)
-                    soup = ffs.utils.soupify('https://www.fanfiction.net/u/123')
+                    soup = ffs.utils.soupify('https://www.fanfiction.net/u/12')
 
                     # Get their favorite authors via this function.
                     fav_authors = ffs.author.profile._favorite_authors(soup)
@@ -107,6 +109,7 @@ def _favorite_authors(soup):
     else:
         return []
 
+
 def _metadata_storyid(soup_tag):
     """
     .. versionadded:: 0.3.0
@@ -119,6 +122,7 @@ def _metadata_storyid(soup_tag):
     """
     return soup_tag['data-storyid']
 
+
 def _metadata_fandom(soup_tag):
     """
     .. versionadded:: 0.3.0
@@ -130,6 +134,7 @@ def _metadata_fandom(soup_tag):
     :type soup_tag: bs4.element.Tag class
     """
     return soup_tag['data-category']
+
 
 def _relative_likes(favorite_stories, inverted_favorites, fandom):
     """
@@ -171,6 +176,7 @@ def _relative_likes(favorite_stories, inverted_favorites, fandom):
 
     # If they like at least one fanfic and one from this fandom, return score.
     return favorites_for_fandom / number_of_favorites
+
 
 def scraper(uid, rate_limit=3):
     """

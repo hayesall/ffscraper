@@ -16,6 +16,19 @@
 from __future__ import print_function
 from __future__ import division
 
+# Relative imports from ffscraper
+from .fanfic import story
+from .fanfic import review
+from .author import profile
+from .phases import phase1
+from .phases import phase2
+from .phases import phase3
+from . import utils
+
+# Non-Standard Library Modules
+from textblob import TextBlob
+from tqdm import tqdm
+
 # Python Standard Library Modules
 from heapq import heappush
 from heapq import heappop
@@ -25,20 +38,10 @@ import logging
 import sys
 
 # Python 2/3 Compatability for Pickling.
-if sys.version_info < (3,0,0):
+if sys.version_info < (3, 0, 0):
     import cPickle as pickle
 else:
     import pickle
-
-# Non-Standard Library Modules
-from textblob import TextBlob
-from tqdm import tqdm
-
-# Relative imports from ffscraper
-from .fanfic import story
-from .fanfic import review
-from .author import profile
-from . import utils
 
 # <Metadata>
 __author__ = 'Alexander L. Hayes (@batflyer)'
@@ -61,19 +64,19 @@ parser = argparse.ArgumentParser(
 mode = parser.add_mutually_exclusive_group()
 
 mode.add_argument('-s', '--sid', type=str,
-    help='Scrape a single story.')
+                  help='Scrape a single story.')
 mode.add_argument('-f', '--file', type=str,
-    help='Scrape all sids contained in a file.')
+                  help='Scrape all sids contained in a file.')
 
 parser.add_argument('-V', '--version', action='store_true',
-    help='Print the version number, then exit.')
+                    help='Print the version number, then exit.')
 parser.add_argument('-v', '--verbose', action='store_true',
-    help='Increase verbosity to help with debugging.')
+                    help='Increase verbosity to help with debugging.')
 
 parser.add_argument('-co', '--Cout', type=str, default='cytoscape.txt',
-    help='Set output file for cytoscape network file.')
+                    help='Set output file for cytoscape network file.')
 parser.add_argument('-o', '--output', type=str, default='facts.txt',
-    help='Set output file the information scraped.')
+                    help='Set output file the information scraped.')
 # </Argument Parser>
 
 args = parser.parse_args()
@@ -88,41 +91,47 @@ if args.verbose:
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
 
-    log_handler = logging.FileHandler('main_log.log')
+    log_handler = logging.FileHandler('ffscraper_log.log')
     log_handler.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - \
-                                  %(levelname)s - %(message)s')
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     log_handler.setFormatter(formatter)
 
     logger.addHandler(log_handler)
     logger.info('Started logger.')
 
-import pdb; pdb.set_trace()
-
 if args.sid:
     # Scrape the contents of a single file from FanFiction.Net
-    current_story = story.scraper(args.sid)
 
-    # Create predicates for BoostSRL.
-    predicates = []
-    predicates.append(utils.PredicateLogicBuilder('author',
-                                                  current_story['aid'],
-                                                  current_story['sid']))
-    predicates.append(utils.PredicateLogicBuilder('rating',
-                                                  current_story['sid'],
-                                                  current_story['rating']))
-    predicates.append(utils.PredicateLogicBuilder('genre',
-                                                  current_story['sid'],
-                                                  current_story['genre']))
-    for p in predicates:
-        print(p)
+    # Phase I:
+    people, fandoms, timestamp_heap = phase1([args.sid],
+                                             output_file=args.output,
+                                             log=args.verbose)
+    # Phase II:
+    phase2(timestamp_heap, log=args.verbose)
+
+    # Phase III:
+    phase3(people, [args.sid], output_file=args.output,
+           fandoms=fandoms, log=args.verbose)
 
 elif args.file:
     # Import the sids from the file and scrape each of them.
 
     # Initialize the sids as a stack
     sids = utils.ImportStoryIDs(args.file)
+    stories = copy.copy(sids)
 
+    # Phase I:
+    people, fandoms, timestamp_heap = phase1(sids,
+                                             output_file=args.output,
+                                             log=args.verbose)
+    # Phase II:
+    phase2(timestamp_heap, log=args.verbose)
+
+    # Phase III:
+    phase3(people, sids, output_file=args.output,
+           fandoms=fandoms, log=args.verbose)
+
+    """
     # Initialize the number_of_sids to avoid recalculation and a counter from 0
     number_of_sids = len(sids)
     counter = 0
@@ -239,24 +248,6 @@ elif args.file:
                                                       current_story['sid'],
                                                       current_story['genre']))
 
-        """
-        if current_story.get('Reviewers'):
-
-            # Add reviewers to the set of people.
-            people = people.union(set(current_story['Reviewers']))
-
-            # Create associated predicates and Cytoscape schemas.
-            for reviewer in current_story['Reviewers']:
-                predicates.append(
-                    utils.PredicateLogicBuilder('reviewed',
-                                                reviewer,
-                                                current_story['sid'])
-                    )
-                schema.append(schemaString('user' + reviewer,
-                                           'reviewed',
-                                           'story' + current_story['sid']))
-        """
-
         with open(args.output, 'a') as f:
             for p in predicates:
                 f.write(p + '\n')
@@ -273,9 +264,10 @@ elif args.file:
             action = heappop(timestamp_heap)
             f.write(str(action[0]) + ' ' + action[1] + '\n')
 
-
     if args.verbose:
         logger.info('====== Starting Phase III ======')
+        # These numbers are specific to Phase I, so they should be logged
+        # during Phase I.
         logger.info('Encountered ' + str(len(fandoms)) +
                     ' fandom(s) during Phase I.')
         logger.info('Fandoms encountered: ' + str(fandoms))
@@ -297,10 +289,6 @@ elif args.file:
         # Pop the current person from the set of people.
         uid = people.pop()
 
-        # Helpful progress bar
-        utils.progress(counter, number_of_uids,
-                       status='Scraping: {0}...'.format(uid))
-
         # Try scraping the profile, log if/where the scraper throws errors.
         try:
             if args.verbose:
@@ -313,10 +301,6 @@ elif args.file:
             fav_stories, inverted_favs = user_profile['favorite_stories']
             favorite_authors = user_profile['favorite_authors']
 
-            """
-            fav_stories, inverted_favs = profile.scraper(
-                                        uid, rate_limit=1)['favorite_stories']
-            """
             if args.verbose:
                 logger.info('Finished scraping uid: ' + uid)
         except Exception:
@@ -361,6 +345,7 @@ elif args.file:
         with open(args.Cout, 'a') as f:
             for p in schema:
                 f.write(p + '\n')
+    """
 
 # Shut down the logger and exit with no errors.
 if args.verbose:

@@ -22,6 +22,16 @@ consolidating them into functions.
 
 from __future__ import print_function
 
+# Relative imports from ffscraper
+from .author import profile
+from .fanfic import story
+from .fanfic import review
+from .format import format
+
+# Non-Standard Library Modules
+from textblob import TextBlob
+from tqdm import tqdm
+
 # Python Standard Library Modules
 from heapq import heappush
 from heapq import heappop
@@ -30,20 +40,10 @@ import logging
 import sys
 
 # Python 2/3 Compatability for Pickling.
-if sys.version_info < (3,0,0):
+if sys.version_info < (3, 0, 0):
     import cPickle as pickle
 else:
     import pickle
-
-# Non-Standard Library Modules
-from textblob import TextBlob
-from tqdm import tqdm
-
-# Relative imports from ffscraper
-from .fanfic import story
-from .fanfic import review
-from .author import profile
-from . import utils
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -55,6 +55,7 @@ log_handler.setFormatter(formatter)
 
 logger.addHandler(log_handler)
 logger.info('Started logger.')
+
 
 def phase0(fandom, log=False):
     """
@@ -71,6 +72,9 @@ def phase0(fandom, log=False):
                     from ffscraper.phases import phase0
 
                     sids = phase0('/book/Harry-Potter')
+
+    # IDEA: Limit how many stories are returned (for instance, I may want
+            the 25 most recently-updated stories).
 
     General notes on how filters may be applied in order to tailor the stories
     one is looking for:
@@ -105,9 +109,8 @@ def phase0(fandom, log=False):
     """
     pass
 
-# Phase I: Scraping stories
 
-def phase1(sids, scrape_reviews=True, log=False):
+def phase1(sids, output_file='facts.txt', scrape_reviews=True, log=True):
     """
     Scrape all stories with sids.
 
@@ -136,6 +139,10 @@ def phase1(sids, scrape_reviews=True, log=False):
         logger.info('====== Starting Phase I ======')
         logger.info('Beginning loop with ' + str(len(sids)) + ' stories.')
 
+    # Initialize lists for storing predicates and schema (write to disk).
+    predicates = []
+
+    # These three will be returned for use in later phases.
     people = set()
     fandoms = set()
     timestamps = []
@@ -143,28 +150,39 @@ def phase1(sids, scrape_reviews=True, log=False):
     for sid in tqdm(sids):
 
         try:
-            if log:  logger.info('Scraping sid: ' + sid)
-            current_story = story.scraper(sid, rate_limit=2)
-            if log:  logger.info('Finished sid: ' + sid)
+            if log:
+                logger.info('Scraping sid: ' + sid)
+            Story = story.scraper(sid, rate_limit=2)
+            if log:
+                logger.info('Finished sid: ' + sid)
         except Exception:
-            if log:  logger.error('fanfiction.net/s/' + sid, exc_info=True)
+            if log:
+                logger.error('fanfiction.net/s/' + sid, exc_info=True)
             continue
 
         # Push the timestamps onto the heap.
-        heappush(timestamps, (int(current_story['published']), 'published'+sid))
-        heappush(timestamps, (int(current_story['updated']), 'lastupdated'+sid))
+        heappush(timestamps,
+                 (int(Story['published']),
+                  'published'+sid))
+        heappush(timestamps,
+                 (int(Story['updated']),
+                  'lastupdated'+sid))
 
         # Add people and fandoms to the appropriate sets.
-        people.add(current_story['aid'])
-        fandoms.add(current_story['fandom'])
+        people.add(Story['aid'])
+        fandoms.add(Story['fandom'])
 
-        if scrape_reviews and ('num_reviews' in current_story):
+        if scrape_reviews and ('num_reviews' in Story):
             try:
-                if log:  logger.info('Scraping reviews: ' + sid)
-                reviews = review.scraper(sid, current_story['num_reviews'])
-                if log:  logger.info('Finished reviews: ' + sid)
+                if log:
+                    logger.info('Scraping reviews: ' + sid)
+                reviews = review.scraper(sid, Story['num_reviews'],
+                                         rate_limit=2)
+                if log:
+                    logger.info('Finished reviews: ' + sid)
             except Exception:
-                if log:  logger.error('Review: /s/' + sid, exc_info=True)
+                if log:
+                    logger.error('Review: /s/' + sid, exc_info=True)
                 continue
 
             for entry in reviews:
@@ -175,12 +193,27 @@ def phase1(sids, scrape_reviews=True, log=False):
 
                 # Get the review text to evaluate sentiment.
                 review_text = TextBlob(entry[3])
-                if log:  logger.info('[' + entry[0] + ',' + sid + ']' + \
-                                     str(review_text.sentiment))
+                if log:
+                    logger.info('[' + entry[0] + ',' + sid + '] ' +
+                                str(review_text.sentiment))
 
                 if entry[0] != 'Guest':
                     # Add the reviewer to the set of people.
                     people.add(entry[0])
+                    predicates.append(format('reviewed', entry[0],
+                                             Story['sid'],
+                                             predicate=True)['predicate'])
+
+        predicates.append(format('author', Story['aid'], Story['sid'],
+                                 predicate=True)['predicate'])
+        predicates.append(format('rating', Story['sid'], Story['rating'],
+                                 predicate=True)['predicate'])
+        predicates.append(format('genre', Story['sid'], Story['genre'],
+                                 predicate=True)['predicate'])
+
+        with open(output_file, 'a') as f:
+            for p in predicates:
+                f.write(p + '\n')
 
     if log:
         logger.info('Encountered ' + str(len(fandoms)) + ' fandom(s).')
@@ -206,18 +239,22 @@ def phase2(timestamps, log=False):
     # that may cause confusion if not addressed like this.
     t = copy.copy(timestamps)
 
-    if log:  logger.info('====== Starting Phase II ======')
+    if log:
+        logger.info('====== Starting Phase II ======')
 
-    for _ in range(len(t)):
-        action = heappop(t)
-        print(str(action[0]) + ' ' + action[1])
+    with open('timestamps.txt', 'w') as f:
+        for _ in range(len(t)):
+            action = heappop(t)
+            f.write(str(action[0]) + ' ' + action[1] + '\n')
 
-    if log:  logger.info('====== Ending Phase II ======')
+    if log:
+        logger.info('====== Ending Phase II ======')
 
 
-def phase3(uids, fandoms=[], log=False):
+def phase3(uids, sids, output_file='facts.txt', fandoms=[], log=True):
     """
-    Scrape all profiles with uids. Reason about specific fandoms.
+    Scrape all profiles with uids, checking for specific storyids.
+    Reason about specific fandoms.
 
     :param uids: list of user-ids.
     :type uids: list of str.
@@ -225,25 +262,54 @@ def phase3(uids, fandoms=[], log=False):
     :type fandoms: list of str.
     """
 
-    if log:  logger.info('====== Starting Phase III ======')
+    if log:
+        logger.info('====== Starting Phase III ======')
 
     for uid in tqdm(uids):
 
         try:
+            if log:
+                logger.info('Started scraping uid: ' + uid)
+
             # Scrape the user's profile.
             current_user = profile.scraper(uid, rate_limit=2)
+
             # Set variables based on contents of dictionary.
             fav_stories, inverted_favs = current_user['favorite_stories']
-            favorite_authors = user_profile['favorite_authors']
+            favorite_authors = current_user['favorite_authors']
+
+            if log:
+                logger.info('Finished scraping uid: ' + uid)
         except Exception:
+            if log:
+                logger.error('fanfiction.net/u/' + uid, exc_info=True)
             continue
 
-        for fandom in fandoms:
-            relative_score = profile._relative_likes(fav_stories, inverted_favs, fandom)
-            # Build Predicates
-            pass
+        # Initialize predicates for BoostSRL.
+        predicates = []
 
+        # Estimate how much the user likes each fandom scraped from.
+        for fandom in fandoms:
+            relative_score = profile._relative_likes(fav_stories,
+                                                     inverted_favs,
+                                                     fandom)
+            if log:
+                logger.info('user/fandom: ' + uid + '/' + fandom + ': ' +
+                            str(relative_score))
+
+            if fandom in inverted_favs:
+                for sid in inverted_favs[fandom]:
+                    if sid in sids:
+                        predicates.append(format('liked', uid, sid,
+                                                 predicate=True)['predicate'])
+
+        # Create predicates for the user's favorite authors if those
+        # authors were observed during this session.
         for author in favorite_authors:
             if author in uids:
-                # Build predicates
-                pass
+                predicates.append(format('favoriteAuthor', uid, author,
+                                         predicate=True)['predicate'])
+
+        with open(output_file, 'a') as f:
+            for p in predicates:
+                f.write(p + '\n')

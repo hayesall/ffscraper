@@ -13,6 +13,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+import sys
+
 """
 +-------------+--------------------------------------------------+
 |   **Name**  |               **Description**                    |
@@ -20,6 +22,7 @@
 |   Utils.py  | Module with some helpful utilities for ffscraper |
 +-------------+--------------------------------------------------+
 """
+
 
 def ImportStoryIDs(path_to_file):
     """
@@ -65,7 +68,6 @@ def ImportStoryIDs(path_to_file):
 
     return sids
 
-import sys
 
 def soupify(url):
     """
@@ -83,7 +85,7 @@ def soupify(url):
 
                     import ffscraper as ffs
 
-                    soup = ffs.utils.soupify('https://www.fanfiction.net/u/123')
+                    soup = ffs.utils.soupify('https://www.fanfiction.net/u/12')
     """
 
     from bs4 import BeautifulSoup as bs

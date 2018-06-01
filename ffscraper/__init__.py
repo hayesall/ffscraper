@@ -30,6 +30,12 @@ Example:
 
 """
 
+from . import fanfic
+from .format import format
+from . import author
+from . import nlp
+from . import utils
+
 __author__ = 'Alexander L. Hayes (@batflyer)'
 __copyright__ = 'Copyright (c) 2018 Alexander L. Hayes'
 __license__ = 'Apache License, Version 2.0'
@@ -37,9 +43,3 @@ __version__ = '0.3.0-prerelease'
 __maintainer__ = __author__
 __email__ = 'alexander@batflyer.net'
 __status__ = 'Prototype'
-
-from . import fanfic
-from .format import format
-from . import author
-from . import nlp
-from . import utils
