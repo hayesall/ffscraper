@@ -3,6 +3,8 @@ Using MySQL with ``ffscraper``
 
 This currently houses my notes for setting up and using MySQL on Fedora 28 for use in this project, with some temporary documentation or scripts that may be useful.
 
+The prompts are used fairly interchangeably here, ``$`` will represent a bash prompt whereas ``mysql>`` represents that the MySQL prompt is being used.
+
 Setting Up MySQL on Fedora 28
 -----------------------------
 
@@ -33,18 +35,20 @@ The example below grants quite a few privileges to ``fanfictionuser``, separatin
 
 .. code-block:: bash
 
-                mysql> create database fanfictiondb
+                mysql> create database fanfictiondb;
+                mysql> create user 'fanfictiondb'@'localhost'
+                    -> identified by 'chooseyourpassword';
                 mysql> grant select, insert, update, delete, index, alter, create, drop
-                    -> on fanfictiondb.*
-                    -> to fanfictionuser identified by 'chooseyourpassword';
+                    -> on fanfictiondb.* to 'fanfictionuser'@'localhost';
 
 Appendix:
 ---------
 
-Helpful commands:
+Helpful commands that I can never seem to remember and have to look up when I need them.
 
-1. Starting MySQL Server: ``sudo service mysqld start``
-2. Checking Server Status: ``sudo service mysqld status``
+1. Starting MySQL Server: ``$ sudo service mysqld start``
+2. Checking Server Status: ``$ sudo service mysqld status``
+3. Show users: ``mysql> select user from mysql.user;``
 
 References:
 -----------
