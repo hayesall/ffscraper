@@ -16,6 +16,30 @@
 from .cytoscape import cytoscapeFormat
 from .predicate import predicateFormat
 
+from mysql.connector import errorcode
+import mysql.connector
+import os
+
+config = {
+    'user': 'fanfictionuser',
+    'password': os.environ.get('FANFICTION_DB_PWD'),
+    'host': '127.0.0.1',
+    'database': 'fanfictiondb',
+    'raise_on_warnings': True
+}
+
+try:
+    cnx = mysql.connector.connect(**config)
+except mysql.connector.Error as err:
+    if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+        print('Something is wrong with the user name or password.')
+    elif err.errno == errorcode.ER_BAD_DB_ERROR:
+        print('Database does not exist.')
+    else:
+        print(err)
+else:
+    cnx.close()
+
 
 def format(predType, *values, **formats):
     """
