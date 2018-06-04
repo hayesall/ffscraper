@@ -181,11 +181,9 @@ def scraper(storyid, rate_limit=3):
                     ['12', '24'], 'rating': 'Rated: Fiction  K', 'aid': "241"}
     """
 
-    # Rate limit
-    time.sleep(rate_limit)
-
     # Make a request to the site, create a BeautifulSoup instance for the html
-    soup = soupify('https://www.fanfiction.net/s/' + storyid)
+    soup = soupify('https://www.fanfiction.net/s/' + storyid,
+                   rate_limit=rate_limit)
 
     # Check in case the fanfic does not exist
     if not _not_empty_fanfic(soup):

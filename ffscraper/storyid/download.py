@@ -42,12 +42,12 @@ def download():
     categories = ['anime', 'book', 'cartoon', 'comic', 'game',
                   'misc', 'play', 'movie', 'tv']
 
-    def download_category(category):
+    def download_category(category, rate_limit=3):
         """
         Download one of the categories.
         """
-        soup = soupify('https://www.fanfiction.net/' + category + '/')
-        time.sleep(3)
+        soup = soupify('https://www.fanfiction.net/' + category + '/',
+                       rate_limit=rate_limit)
 
         ahref = soup.find('div', {'id': 'list_output'}).find_all('a')
 

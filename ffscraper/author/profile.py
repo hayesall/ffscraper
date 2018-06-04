@@ -225,11 +225,9 @@ def scraper(uid, rate_limit=3):
                     favorite_stories - (['111', 'Hobbit'], {'Hobbit': ['111']})
     """
 
-    # Rate Limit
-    time.sleep(rate_limit)
-
     # Make a request to the site, make a BeautifulSoup instance for the html
-    soup = soupify('https://www.fanfiction.net/u/' + uid)
+    soup = soupify('https://www.fanfiction.net/u/' + uid,
+                   rate_limit=rate_limit)
     return {
                 'uid': uid,
                 'favorite_authors': _favorite_authors(soup),
