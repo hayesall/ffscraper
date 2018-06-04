@@ -42,6 +42,22 @@ def _get_sids(soup):
 
     return sids
 
+def _sids_from_fandom(fandom, rate_limit=3):
+    """
+    Get all sids for a particular fandom,
+    e.g. '/book/Phantom-of-the-Opera/', '/play/Phantom-of-the-Opera/',
+         '/movie/Phantom-of-the-Opera/'
+
+    .. note::
+        Currently this will return a number based on the default settings.
+    """
+
+    url = 'https://www.fanfiction.net' + fandom
+    soup = soupify(url, rate_limit=rate_limit)
+
+    # Find the number of stories to determine the number of pages.
+    return soup.find('span', {'id': 'live_counter'}).text
+
 
 def scrape(url, rate_limit=3):
     """
