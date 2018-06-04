@@ -32,6 +32,7 @@ Example:
 
 from . import fanfic
 from .format import format
+from . import storyid
 from . import author
 from . import nlp
 from . import utils
