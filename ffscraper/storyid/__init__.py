@@ -17,8 +17,10 @@
 Scrape the story-ids based on an input url.
 """
 
-from ..utils import soupify
+from __future__ import print_function
 
+from ..utils import soupify
+from tqdm import tqdm
 
 def _get_sids(soup):
     """
@@ -42,21 +44,25 @@ def _get_sids(soup):
 
     return sids
 
-def _sids_from_fandom(fandom, rate_limit=3):
-    """
-    Get all sids for a particular fandom,
-    e.g. '/book/Phantom-of-the-Opera/', '/play/Phantom-of-the-Opera/',
-         '/movie/Phantom-of-the-Opera/'
 
-    .. note::
-        Currently this will return a number based on the default settings.
+def _number_of_pages(soup):
+    """
+    There are two center tags at the top and bottom of each page, containing
+    information on how the fanfics are paginated.
     """
 
-    url = 'https://www.fanfiction.net' + fandom
-    soup = soupify(url, rate_limit=rate_limit)
+    # Initialize number_of_pages to 0.
+    number_of_pages = 0
 
-    # Find the number of stories to determine the number of pages.
-    return soup.find('span', {'id': 'live_counter'}).text
+    for center_tag in soup.find_all('center'):
+        for a_tag in center_tag.find_all('a'):
+            if 'Last' in a_tag:
+                # The last value in the list is the final page.
+                number_of_pages = int(a_tag['href'].split('=')[-1])
+                break
+
+    # Return 0 or the updated number_of_pages.
+    return number_of_pages
 
 
 def scrape(url, rate_limit=3):
@@ -73,4 +79,18 @@ def scrape(url, rate_limit=3):
     :rtype: list of strings.
     """
 
-    return _get_sids(soupify(url, rate_limit=rate_limit))
+    soup = soupify(url, rate_limit=rate_limit)
+    number_of_pages = _number_of_pages(soup)
+
+    sids = []
+
+    if number_of_pages:
+        # If number_of_pages was assigned, then we may scrape the information
+        for page in tqdm(range(1, number_of_pages+1)):
+            sids += _get_sids(soupify(url + '?&p=' + str(page),
+                                      rate_limit=rate_limit))
+    else:
+        # If number_of_pages is 0, get the first page.
+        sids = _get_sids(soupify(url, rate_limit=rate_limit))
+
+    return sids

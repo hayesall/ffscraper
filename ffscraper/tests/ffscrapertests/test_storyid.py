@@ -26,6 +26,12 @@ from ffscraper import storyid
 
 class GetSidsTest(unittest.TestCase):
 
+    def test_get_storyids_0(self):
+
+        soup = bs("""""", 'html.parser')
+        sids = storyid._get_sids(soup)
+        self.assertEqual(sids, [])
+
     def test_get_storyids_1(self):
 
         soup = bs("""<div class='z-list zhover zpointer '
@@ -73,3 +79,23 @@ class GetSidsTest(unittest.TestCase):
 
         sids = storyid._get_sids(soup)
         self.assertEqual(sids, ['111', '114', '2'])
+
+
+class NumberOfPagesTest(unittest.TestCase):
+
+    def test_get_number_of_pages_1(self):
+        soup = bs("""""", 'html.parser')
+        number_of_pages = storyid._number_of_pages(soup)
+        self.assertEqual(0, number_of_pages)
+
+    def test_get_number_of_pages_2(self):
+        soup = bs("""<center style='margin-top:5px;'>5.2K | Page  <b>1</b>
+        <a href='/book/Current-Story/?&srt=1&r=103&p=2'>2</a>
+        <a href='/book/Current-Story/?&srt=1&r=103&p=3'>3</a>
+        <a href='/book/Current-Story/?&srt=1&r=103&p=4'>4</a>
+        <a href='/book/Current-Story/?&srt=1&r=103&p=11'>11</a>  ..
+        <a href='/book/Current-Story/?&srt=1&r=103&p=301'>Last</a>
+        <a href='/book/Current-Story/?&srt=1&r=103&p=2'>Next &#11;</a>
+        </center>""", 'html.parser')
+        number_of_pages = storyid._number_of_pages(soup)
+        self.assertEqual(301, number_of_pages)
