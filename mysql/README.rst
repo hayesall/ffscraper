@@ -33,7 +33,7 @@ I had a copy of [#]_ within reach and based a few of these sections on their sug
 
 The example below grants quite a few privileges to ``fanfictionuser``, separating these out such that only root may perform certain actions would typically be prefereable. In such a case, granting ``select``, ``insert``, ``delete``, and ``update`` may be prefereable.
 
-.. code-block:: bash
+.. code-block:: sql
 
                 mysql> create database fanfictiondb;
                 mysql> create user 'fanfictiondb'@'localhost'
