@@ -67,7 +67,7 @@ def _number_of_pages(soup):
 
 def scrape(url, rate_limit=3):
     """
-    Scrape all story-ids found on a particular page.
+    Scrape all story-ids beginning at a url.
 
     :param url: Url for a page on FanFiction.Net
     :type url: str.
@@ -77,6 +77,20 @@ def scrape(url, rate_limit=3):
 
     :returns: A list of story-ids, up to 25.
     :rtype: list of strings.
+
+    Example:
+
+    .. code-block:: python
+
+                    import ffscraper as ffs
+
+                    url = 'https://www.fanfiction.net/book/Coraline/'
+                    sids = ffs.storyid.scrape(url)
+
+                    # 'sids' in this case will contain a list of the storyids
+                    # for the /book/Coraline/ community.
+
+                    # (numbers are changed): ['110', '122', '154', ...]
     """
 
     soup = soupify(url, rate_limit=rate_limit)

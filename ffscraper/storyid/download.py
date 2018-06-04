@@ -33,8 +33,12 @@ def download():
     .. code-block:: python
 
                     from ffscraper.storyid.download import download
+                    import json
+
+                    # Download the fandoms.
                     fandoms = download()
 
+                    # Use json package to dump them to a file.
                     with open('fandoms.json', 'w') as f:
                         json.dump(fandoms, f, indent=2)
     """
