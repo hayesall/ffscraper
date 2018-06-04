@@ -36,7 +36,7 @@ The example below grants quite a few privileges to ``fanfictionuser``, separatin
 .. code-block:: sql
 
                 mysql> create database fanfictiondb;
-                mysql> create user 'fanfictiondb'@'localhost'
+                mysql> create user 'fanfictionuser'@'localhost'
                     -> identified by 'chooseyourpassword';
                 mysql> grant select, insert, update, delete, index, alter, create, drop
                     -> on fanfictiondb.* to 'fanfictionuser'@'localhost';
