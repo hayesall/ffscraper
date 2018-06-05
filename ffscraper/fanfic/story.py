@@ -150,6 +150,58 @@ def _title(soup):
     """
     return soup.find('b', {'class': 'xcontrast_txt'}).text
 
+def _metadata(soup):
+    """
+    .. versionadded:: 0.3.0
+
+    Parses the metadata displayed on a page.
+
+    :param soup: Soup containing a page from FanFiction.Net
+    :type soup: bs4.BeautifulSoup class
+
+    :returns: A dictionary of metadata.
+    :rtype: dict.
+    """
+
+    metadata_html = soup.find('span', {'class': 'xgray xcontrast_txt'})
+    metadata = metadata_html.text.replace('Sci-Fi', 'SciFi')
+    metadata = [s.strip() for s in metadata.split('-')]
+    return metadata
+
+
+def _get_abstract_text(soup):
+    """
+    .. versionadded:: 0.3.0
+
+    Returns the abstract for the story (short summary at the top of the page).
+
+    :param soup: Soup containing a page from FanFiction.Net
+    :type soup: bs4.BeautifulSoup class
+
+    :returns: The abstract for the story.
+    :rtype: str.
+    """
+    return soup.find('div', {'class': 'xcontrast_txt'}).text
+
+
+def _get_story_text(soup):
+    """
+    .. versionadded:: 0.3.0
+
+    Returns the story text from the page, identified by <div id='storytext'>
+
+    .. note:: Particularly with older stories, this appears to fail
+              occasionally. Alternatives or a regex-based method may be
+              necessary at some point.
+
+    :param soup: Soup containing a page from FanFiction.Net
+    :type soup: bs4.BeautifulSoup class
+
+    :returns: The story text as a string.
+    :rtype: str.
+    """
+    return soup.find('div', {'id': 'storytext'}).text
+
 
 def scraper(storyid, rate_limit=3):
     """
