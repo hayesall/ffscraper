@@ -10,6 +10,7 @@ Subpackages
     ffscraper.fanfic
     ffscraper.format
     ffscraper.nlp
+    ffscraper.storyid
 
 Submodules
 ----------
