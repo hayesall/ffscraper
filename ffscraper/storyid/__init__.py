@@ -22,6 +22,8 @@ from __future__ import print_function
 from ..utils import soupify
 from tqdm import tqdm
 
+from math import inf
+
 def _get_sids(soup):
     """
     Find all story links in the soup.
@@ -65,7 +67,7 @@ def _number_of_pages(soup):
     return number_of_pages
 
 
-def scrape(url, rate_limit=3):
+def scrape(url, rate_limit=3, max_pages=inf):
     """
     Scrape all story-ids beginning at a url.
 
@@ -75,7 +77,12 @@ def scrape(url, rate_limit=3):
                        in order to enforce scraper niceness.
     :type rate_limit: int.
 
-    :returns: A list of story-ids, up to 25.
+    :param max_pages: Optional upper limit to the number of pages scraped.
+                      This may be useful in cases where there a large number of
+                      stories associated with a fandom.
+    :type max_pages: (int.)
+
+    :returns: A list of story-ids.
     :rtype: list of strings.
 
     Example:
@@ -95,6 +102,10 @@ def scrape(url, rate_limit=3):
 
     soup = soupify(url, rate_limit=rate_limit)
     number_of_pages = _number_of_pages(soup)
+
+    # If max pages is specified, set the number of pages to the max number.
+    if max_pages < number_of_pages:
+        number_of_pages = max_pages
 
     sids = []
 
