@@ -99,3 +99,15 @@ class NumberOfPagesTest(unittest.TestCase):
         </center>""", 'html.parser')
         number_of_pages = storyid._number_of_pages(soup)
         self.assertEqual(301, number_of_pages)
+
+    def test_get_number_of_pages(self):
+        soup = bs("""<center style='margin-top:5px;'>1.1K | Page  <b>1</b>
+        <a href='/book/Current-Story/?&srt=1&r=103&p=2'>2</a>
+        <a href='/book/Current-Story/?&srt=1&r=103&p=3'>3</a>
+        <a href='/book/Current-Story/?&srt=1&r=103&p=4'>4</a>
+        <a href='/book/Current-Story/?&srt=1&r=103&p=11'>11</a>  ..
+        <a href='/book/Current-Story/?&srt=1&r=103&p=99'>Last</a>
+        <a href='/book/Current-Story/?&srt=1&r=103&p=2'>Next &#11;</a>
+        </center>""", 'html.parser')
+        number_of_pages = storyid._number_of_pages(soup)
+        self.assertEqual(99, number_of_pages)
