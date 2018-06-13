@@ -36,7 +36,6 @@ from tqdm import tqdm
 # Python Standard Library Modules
 from heapq import heappush
 from heapq import heappop
-from math import inf
 import copy
 import logging
 import sys
@@ -59,7 +58,7 @@ logger.addHandler(log_handler)
 logger.info('Started logger.')
 
 
-def phase0(fandom, max_pages=inf, rate_limit=3, log=False):
+def phase0(fandom, max_pages=float('inf'), rate_limit=3, log=False):
     """
     Scrape story-ids for a particular fandom.
 

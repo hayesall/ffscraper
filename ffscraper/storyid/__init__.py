@@ -22,7 +22,6 @@ from __future__ import print_function
 from ..utils import soupify
 from tqdm import tqdm
 
-from math import inf
 
 def _get_sids(soup):
     """
@@ -67,7 +66,7 @@ def _number_of_pages(soup):
     return number_of_pages
 
 
-def scrape(url, rate_limit=3, max_pages=inf):
+def scrape(url, rate_limit=3, max_pages=float('inf')):
     """
     Scrape all story-ids beginning at a url.
 
