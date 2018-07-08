@@ -69,7 +69,7 @@ def ImportStoryIDs(path_to_file):
     return sids
 
 
-def soupify(url):
+def soupify(url, rate_limit=3):
     """
     .. versionadded:: 0.3.0
 
@@ -90,6 +90,9 @@ def soupify(url):
 
     from bs4 import BeautifulSoup as bs
     import requests
+    import time
+
+    time.sleep(rate_limit)
 
     html = requests.get(url).text
     return bs(html, 'html.parser')

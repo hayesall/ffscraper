@@ -27,6 +27,7 @@ from .author import profile
 from .fanfic import story
 from .fanfic import review
 from .format import format
+from . import storyid
 
 # Non-Standard Library Modules
 from textblob import TextBlob
@@ -57,12 +58,12 @@ logger.addHandler(log_handler)
 logger.info('Started logger.')
 
 
-def phase0(fandom, log=False):
+def phase0(fandom, max_pages=float('inf'), rate_limit=3, log=False):
     """
     Scrape story-ids for a particular fandom.
 
     :param fandom: The identifier on FanFiction.Net pointing to a specific
-                   community. e.g. '/book/Harry-Potter'
+                   community. e.g. '/book/Harry-Potter/'
     :type fandom: str.
 
     Example:
@@ -71,7 +72,13 @@ def phase0(fandom, log=False):
 
                     from ffscraper.phases import phase0
 
-                    sids = phase0('/book/Harry-Potter')
+                    sids = phase0('/book/Harry-Potter/')
+
+    .. code-block:: python
+
+                    from ffscraper.phases import phase0
+
+                    sids = phase0('/book/Coraline/', max_pages=3)
 
     # IDEA: Limit how many stories are returned (for instance, I may want
             the 25 most recently-updated stories).
@@ -107,7 +114,9 @@ def phase0(fandom, log=False):
     English: &lan=1
 
     """
-    pass
+    url = 'https://www.fanfiction.net' + fandom
+    return storyid.scrape(url, max_pages=max_pages, rate_limit=rate_limit)
+
 
 
 def phase1(sids, output_file='facts.txt', scrape_reviews=True, log=True):

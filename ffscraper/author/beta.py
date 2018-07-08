@@ -65,4 +65,5 @@ def scraper(uid, rate_limit=3):
     time.sleep(rate_limit)
 
     # Make a request to the site, make a BeautifulSoup instance for the html
-    soup = soupify('https://www.fanfiction.net/beta/' + uid)
+    soup = soupify('https://www.fanfiction.net/beta/' + uid,
+                   rate_limit=rate_limit)

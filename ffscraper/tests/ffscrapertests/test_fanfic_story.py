@@ -25,6 +25,42 @@ import unittest
 sys.path.append('./')
 from ffscraper.fanfic import story
 
+
+class AbstractTextTest(unittest.TestCase):
+
+
+    def test_get_abstract_text_1(self):
+        soup = bs("""<div class='xcontrast_txt'>Hello</div>""", 'html.parser')
+        abstract = story._get_abstract_text(soup)
+        self.assertEqual(abstract, 'Hello')
+
+
+    def test_get_abstract_text_2(self):
+        soup = bs("""<div class='xcontrast_txt'>The abstract is contained
+        under the first div tag with class xcontrast_txt.</div>""",
+        'html.parser')
+        abstract = story._get_abstract_text(soup)
+        self.assertEqual(abstract, """The abstract is contained
+        under the first div tag with class xcontrast_txt.""")
+
+
+class StoryTextTest(unittest.TestCase):
+
+
+    def test_get_story_text_1(self):
+        soup = bs("""<div id='storytext'>World.</div>""", 'html.parser')
+        story_text = story._get_story_text(soup)
+        self.assertEqual(story_text, 'World.')
+
+
+    def test_get_story_text_2(self):
+        soup = bs("""<div id='storytext'>The story is contained in a similar
+        div, but may be identified by a storytext id.</div>""", 'html.parser')
+        story_text = story._get_story_text(soup)
+        self.assertEqual(story_text, """The story is contained in a similar
+        div, but may be identified by a storytext id.""")
+
+
 class CategoryAndFandomTest(unittest.TestCase):
 
     def test_category_and_fandom_1(self):

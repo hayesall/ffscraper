@@ -40,35 +40,6 @@ def ReviewIDScraper(storyid, reviews_num, rate_limit=3):
 
     """
     pass
-    """
-    number_of_pages = (reviews_num // 15) + 1
-
-    user_id_list = []
-
-    for p in range(number_of_pages):
-
-        # Rate limit
-        time.sleep(rate_limit)
-
-        soup = soupify('https://www.fanfiction.net/r/' + storyid +
-                       '/0/' + str(p+1) + '/')
-
-        # Get the tbody, which is where the review table is stored
-        t = soup.find('tbody')
-
-        # Loop over the table entries (td)
-        for review in t.find_all('td'):
-
-            # Reviews link to the profile of the user who reviewed it.
-            for link in review.find_all('a', href=True):
-
-                if '/u/' in str(link):
-                    # This is a way to get the user id.
-                    user_id_list.append(str(link).split('"')[1].split('/')[2])
-
-    return list(set(user_id_list))
-    """
-
 
 def _review_chapter_and_timestamp(soup_tag):
     """
@@ -205,11 +176,9 @@ def scraper(storyid, reviews_num, rate_limit=3):
 
     for p in range(number_of_pages):
 
-        # Rate limit
-        time.sleep(rate_limit)
-
         soup = soupify('https://www.fanfiction.net/r/' + storyid +
-                       '/0/' + str(p+1) + '/')
+                       '/0/' + str(p+1) + '/',
+                       rate_limit=rate_limit)
 
         for review in _reviews_in_table(soup):
             list_of_review_tuples.append(review)

@@ -33,8 +33,12 @@ def download():
     .. code-block:: python
 
                     from ffscraper.storyid.download import download
+                    import json
+
+                    # Download the fandoms.
                     fandoms = download()
 
+                    # Use json package to dump them to a file.
                     with open('fandoms.json', 'w') as f:
                         json.dump(fandoms, f, indent=2)
     """
@@ -42,12 +46,12 @@ def download():
     categories = ['anime', 'book', 'cartoon', 'comic', 'game',
                   'misc', 'play', 'movie', 'tv']
 
-    def download_category(category):
+    def download_category(category, rate_limit=3):
         """
         Download one of the categories.
         """
-        soup = soupify('https://www.fanfiction.net/' + category + '/')
-        time.sleep(3)
+        soup = soupify('https://www.fanfiction.net/' + category + '/',
+                       rate_limit=rate_limit)
 
         ahref = soup.find('div', {'id': 'list_output'}).find_all('a')
 
