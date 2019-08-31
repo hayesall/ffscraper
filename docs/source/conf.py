@@ -49,8 +49,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'ffscraper'
-copyright = '2018, Alexander L. Hayes (@batflyer)'
-author = 'Alexander L. Hayes (@batflyer)'
+copyright = '2018-2019, Alexander L. Hayes (@hayesall)'
+author = 'Alexander L. Hayes (@hayesall)'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -145,7 +145,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'ffscraper.tex', 'ffscraper Documentation',
-     'Alexander L. Hayes (@batflyer)', 'manual'),
+     'Alexander L. Hayes (@hayesall)', 'manual'),
 ]
 
 

@@ -1,11 +1,11 @@
 # Site settings
 title: FicSearch
 description: "A search and recommendation engine for FanFiction.Net"
-url: "http://batflyer.net/"
+url: "http://hayesall.com/"
 author:
   name: "Alexander L. Hayes"
   email: "alexander@batflyer.net"
-  url: "http://batflyer.net"
+  url: "http://hayesall.com"
 
 # Build settings
 baseurl: / # Change this to your relative path (ex: /blog/), or leave just a /

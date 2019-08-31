@@ -1,5 +1,5 @@
 
-#   Copyright (c) 2018 Alexander L. Hayes (@batflyer)
+#   Copyright (c) 2018-2019 Alexander L. Hayes (@hayesall)
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ A short Python script for analyzing the results output from
 run_boosting_jobs.sh
 """
 
-__author__ = 'Alexander L. Hayes (@batflyer)'
-__copyright__ = 'Copyright (c) 2018 Alexander L. Hayes'
+__author__ = 'Alexander L. Hayes (@hayesall)'
+__copyright__ = 'Copyright (c) 2018-2019 Alexander L. Hayes'
 __license__ = 'Apache'
 __version__ = '0.0.1'
 __maintainer__ = __author__

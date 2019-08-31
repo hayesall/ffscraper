@@ -32,7 +32,7 @@ alexander.hayes@utdallas.edu\\
 \maketitle
 \begin{abstract}
 \begin{quote}
-The author performs link prediction on metadata and social network data scraped from FanFiction.Net (the world's largest repository of user-submitted fanfiction), applying statistical relational learning to predict authorship of a story through two tree-based models: relational dependency networks (RDNs) learned via gradient boosting, and RDNs learned via gradient boosting with soft-margin constraints set on the cost of false positives and false negatives. Results are shown for four types of fanfiction, and transfer is applied to show how structure learning generalizes across different social networks. Code and documentation for the experiments are available in the Appendix section of this paper and on GitHub.\footnote{\texttt{https://github.com/batflyer/FanFiction-\\Collaborative-Filtering}}
+The author performs link prediction on metadata and social network data scraped from FanFiction.Net (the world's largest repository of user-submitted fanfiction), applying statistical relational learning to predict authorship of a story through two tree-based models: relational dependency networks (RDNs) learned via gradient boosting, and RDNs learned via gradient boosting with soft-margin constraints set on the cost of false positives and false negatives. Results are shown for four types of fanfiction, and transfer is applied to show how structure learning generalizes across different social networks. Code and documentation for the experiments are available in the Appendix section of this paper and on GitHub.\footnote{\texttt{https://github.com/hayesall/ffscraper}}
 \end{quote}
 \end{abstract}
 
@@ -172,7 +172,7 @@ If the number of facts available during learning lead to better results on the g
              Mockingbird & \textbf{0.014} & 0.007 & 0.013 & \textbf{0.034} \\
         \hline
         \end{tabular}
-        
+
         % Table 2: RDN-Boost Recall
         \begin{tabular}{|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
         \hline
@@ -186,7 +186,7 @@ If the number of facts available during learning lead to better results on the g
             Mockingbird & 0.331 & 0.415 & 0.258 & 0.210 \\
         \hline
         \end{tabular}
-        
+
         % Table 3: Softm-Boost Precision
         \begin{tabular}{|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
         \hline
@@ -200,7 +200,7 @@ If the number of facts available during learning lead to better results on the g
              Mockingbird & 0.009 & 0.008 & 0.015 & \textbf{0.025} \\
         \hline
         \end{tabular}
-        
+
         % Table 4: Softm-Boost Recall
         \begin{tabular}{|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
         \hline

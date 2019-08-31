@@ -15,7 +15,7 @@ from os import path
 here =  path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file.
-with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 # nltk needs punkt and stopwords for ffscraper.nlp
@@ -33,9 +33,8 @@ setup(
 
     description='Yet another set of scraping tools for FanFiction.Net',
     long_description=long_description,
-    long_description_content_type='text/markdown',
 
-    url='https://github.com/batflyer/FanFiction-Collaborative-Filtering',
+    url='https://github.com/hayesall/ffscraper',
 
     author=ffs.__author__,
     author_email=ffs.__email__,
@@ -64,8 +63,8 @@ setup(
     keywords='fanfiction scraping search',
 
     project_urls={
-        'Source': 'https://github.com/batflyer/FanFiction-Collaborative-Filtering',
-        'Tracker': 'https://github.com/batflyer/FanFiction-Collaborative-Filtering/issues'
+        'Source': 'https://github.com/hayesall/ffscraper',
+        'Tracker': 'https://github.com/hayesall/ffscraper/issues'
     },
 
     packages=find_packages(exclude=['docs', 'tests*'])
